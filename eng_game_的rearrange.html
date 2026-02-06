@@ -470,7 +470,7 @@
             { rule: 3, chinese: "一段三公里的路程", correct_tokens: [ ["a", "three-kilometer", "journey"] ], distractors: ["three-kilometers", "journey's", "of"] },
             { rule: 3, chinese: "一個四星級的酒店", correct_tokens: [ ["a", "four-star", "hotel"] ], distractors: ["four-stars", "hotel's", "of"] },
             { rule: 3, chinese: "一份五頁的報告", correct_tokens: [ ["a", "five-page", "report"] ], distractors: ["five-pages", "report's", "of"] },
-            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"] ], distractors: ["six-persons", "team's", "of"] },
+            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"] ], distractors: ["six-people", "team's", "of"] },
             { rule: 3, chinese: "一段十分鐘的休息", correct_tokens: [ ["a", "ten-minute", "break"] ], distractors: ["ten-minutes", "break's", "of"] },
             { rule: 3, chinese: "一個七天的假期", correct_tokens: [ ["a", "seven-day", "holiday"] ], distractors: ["seven-days", "holiday's", "of"] },
 
@@ -488,6 +488,8 @@
 
             // Rule 5: 主動動詞 (who/which/that + V)
             { rule: 5, chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ], distractors: ["cry", "is", "crying"] },
+            { rule: 5, chinese: "不喜歡我的那個老師", correct_tokens: [ ["the", "teacher", "who", "does", "not","like", "me"] ], distractors: ["likes", "is", "I"] },
+            { rule: 5, chinese: "昨天沒有來的學生", correct_tokens: [ ["students", "who", "did", "not","come", "yesterday"] ], distractors: ["came", "student", "do", "did"] },
             { rule: 5, chinese: "住在隔壁的那個女人", correct_tokens: [ ["the", "woman", "who", "lives", "next", "door"] ], distractors: ["living", "is", "live"] },
             { rule: 5, chinese: "很多遊客參觀的那個博物館", correct_tokens: [ ["the", "museum", "which", "many", "tourists", "visit"] ], distractors: ["visiting", "is", "visits"] },
             { rule: 5, chinese: "正在睡覺的那隻貓", correct_tokens: [ ["the", "cat", "which", "is", "sleeping"] ], distractors: ["sleep", "sleeps", "who"] },
@@ -583,7 +585,7 @@
             { rule: 12, chinese: "在家裡的生活", correct_tokens: [ ["life", "at", "home"] ], distractors: ["of", "'s", "in"] },
 
             // Rule 13: About
-            { rule: 13, chinese: "一本關於中國的書", correct_tokens: [ ["a", "book", "about", "China"] ], distractors: ["of", "'s", "for"] },
+            { rule: 13, chinese: "一本有關中國的書", correct_tokens: [ ["a", "book", "about", "China"] ], distractors: ["of", "'s", "for"] },
             { rule: 13, chinese: "一個關於未來的討論", correct_tokens: [ ["a", "discussion", "about", "the", "future"] ], distractors: ["of", "'s", "on"] },
             { rule: 13, chinese: "一個關於愛的故事", correct_tokens: [ ["a", "story", "about", "love"] ], distractors: ["of", "'s", "for"] },
             { rule: 13, chinese: "一部關於戰爭的電影", correct_tokens: [ ["a", "movie", "about", "wars"] ], distractors: ["of", "'s", "in"] },
@@ -979,4 +981,5 @@
 
     </script>
 </body>
+
 </html>
