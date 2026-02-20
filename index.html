@@ -340,32 +340,24 @@
 
 <div id="game-container">
         
-        <div id="startOverlay" style="text-align: center; padding: 40px 20px;">
-            <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">歡迎來到<br>英文「的」文法挑戰</h2>
-            <div style="margin-bottom: 30px;">
-                <button onclick="openOptionsModal()" style="background: white; color: var(--primary-dark); padding: 10px 20px; font-size: 1rem; border-radius: 8px; border:2px solid var(--primary-dark); cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.2s;">
-                    ⚙️ 選擇「的」的種類
-                </button>
-            </div>
-            <button onclick="startGameSession()" style="background: var(--primary-color); color: white; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; border:none; cursor:pointer; box-shadow: 0 5px 15px rgba(10, 147, 150, 0.4); font-weight:bold; transition: all 0.2s;">
-                ▶ 開始挑戰 (Start)
-            </button>
-        </div>
-
-        <div class="modal-overlay hidden" id="optionsModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">⚙️ 選擇題目種類</div>
-                    <div class="close-btn" onclick="closeModal('optionsModal')">&times;</div>
-                </div>
+        <div id="startOverlay" style="text-align: center; padding: 20px 10px;">
+            <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 26px;">歡迎來到<br>英文「的」文法挑戰</h2>
+            
+            <div style="background: var(--light-bg-1); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <div style="font-weight: bold; margin-bottom: 10px; color: var(--primary-dark); text-align: center; font-size: 18px;">⚙️ 選擇你要挑戰的「的」</div>
+                
                 <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
                     <button onclick="selectAllOptions(true)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全選</button>
                     <button onclick="selectAllOptions(false)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全不選</button>
                 </div>
-                <div id="optionsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; max-height: 50vh; overflow-y: auto;">
+                
+                <div id="optionsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 40vh; overflow-y: auto;">
                     </div>
-                <button onclick="saveOptionsAndClose()" style="margin-top: 20px; width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">確定</button>
             </div>
+
+            <button onclick="startGameSession()" style="background: var(--primary-color); color: white; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; border:none; cursor:pointer; box-shadow: 0 5px 15px rgba(10, 147, 150, 0.4); font-weight:bold; transition: all 0.2s;">
+                ▶ 開始挑戰 (Start)
+            </button>
         </div>
         <div id="game-area" style="display: none;">
             <h1>英文「的」文法挑戰</h1>
@@ -485,20 +477,12 @@
             { id: 11, name: "地方 + 的" },
             { id: 12, name: "時間 + 的" }
         ];
-// --- 新增：主選單與題庫選擇邏輯 ---
-        let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全選 12 款
 
-        function openOptionsModal() {
-            document.getElementById('optionsModal').classList.remove('hidden');
-            renderOptions();
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
+let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全選 12 款
 
         function renderOptions() {
             const container = document.getElementById('optionsContainer');
+            if(!container) return; // 避免找不到元素的報錯
             container.innerHTML = '';
             categories.forEach(cat => {
                 const isChecked = selectedCategories.includes(cat.id) ? 'checked' : '';
@@ -516,28 +500,28 @@
             checkboxes.forEach(cb => cb.checked = selectAll);
         }
 
-        function saveOptionsAndClose() {
+        function startGameSession() {
+            // 在按開始遊戲時，即時讀取玩家勾選了哪些
             const checkboxes = document.querySelectorAll('.option-checkbox');
             selectedCategories = [];
             checkboxes.forEach(cb => {
                 if (cb.checked) selectedCategories.push(parseInt(cb.value));
             });
-            if (selectedCategories.length === 0) {
-                alert("請至少選擇一種「的」！");
-                return;
-            }
-            closeModal('optionsModal');
-        }
 
-        function startGameSession() {
             if (selectedCategories.length === 0) {
                 alert("請至少選擇一種「的」！");
                 return;
             }
+
             document.getElementById('startOverlay').style.display = 'none';
             document.getElementById('game-area').style.display = 'block';
             initGame(false);
         }
+
+        // 當網頁載入時，立刻在畫面上畫出選項
+        window.addEventListener('DOMContentLoaded', () => {
+            renderOptions();
+        });
         const ruleToCategory = {
             3: 1, 1: 2, 2: 2, 7: 3, 8: 4, 13: 5, 5: 6, 6: 6, 14: 7, 10: 8, 9: 9, 4: 10, 12: 11, 11: 12
         };
@@ -1142,12 +1126,12 @@ function goBackToMenu() {
             dom.gameArea.style.display = 'none';
             dom.endScreen.style.display = 'none';
             document.getElementById('startOverlay').style.display = 'block';
+            renderOptions(); // 返回時重新顯示一下選項
         }
-        // 啟動遊戲
-        initGame();
 
     </script>
 </body>
 </html>
+
 
 
