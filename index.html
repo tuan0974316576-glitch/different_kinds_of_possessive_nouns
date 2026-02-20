@@ -356,7 +356,7 @@
         const keyPart2 = "99843d0bae6f77f25b0bf50875a3cc23d9556e7e77d73b2a8828e9b690319381"; 
         const OPENROUTER_API_KEY = keyPart1 + keyPart2;
 
-        async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, standardAnswer) {
+       async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, standardAnswer) {
             const prompt = `你是一個專業且寬容的英文老師，正在批改學生的翻譯題。
 中文題目：「${questionChinese}」
 必須使用的文法規則：「${ruleDesc}」
@@ -366,13 +366,15 @@
 
 請判斷學生的答案是否可以接受。
 判斷標準：
-1. 允許合理的同義詞 (例如 table/desk, picture/photo, colour/color, bag/sack 等)。
-2. 允許美式/英式拼寫差異 (例如 centre/center)。
+1. 允許合理的同義詞 (例如 guest/customer/client, picture/photo, colour/color 等)。
+2. 允許美式/英式拼寫差異。
 3. 允許不影響理解的極微小拼字錯誤。
-4. 句意必須與中文題目一致。
-5. 最重要的一點：必須符合規定的文法規則！如果文法結構錯了（例如該用 of 但用了 's，或者不應該加 s 的量詞加了 s），即使意思對也是錯的。
+4. 句意必須與中文題目一致 (注意情態動詞的語氣，例如可能 might/may vs 應該 should)。
+5. 最重要的一點：必須符合規定的文法規則！如果文法結構錯了，即使意思對也是錯的。
 
-請僅回覆 "YES" 或 "NO"，不需要任何解釋。`;
+請以 JSON 格式回覆，必須包含以下兩個欄位：
+"isCorrect": true 或 false
+"explanation": 如果錯了，請用繁體中文簡短解釋學生的句子錯在哪裡 (例如用字不當、文法錯誤、語氣不對)，以及為什麼標準答案才是對的。如果答對了，可以留空或給一句鼓勵說話。只輸出 JSON，不要其他廢話。`;
 
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -391,11 +393,23 @@
 
                 if (!response.ok) throw new Error("API error");
                 const data = await response.json();
-                const reply = data.choices[0].message.content.trim().toUpperCase();
-                return reply.includes("YES");
+                let reply = data.choices[0].message.content.trim();
+                
+                // 清理 AI 可能包含的 Markdown 標籤 (例如 ```json ... ```)
+                if (reply.startsWith("```json")) {
+                    reply = reply.replace(/^```json/, '').replace(/```$/, '').trim();
+                } else if (reply.startsWith("```")) {
+                    reply = reply.replace(/^```/, '').replace(/```$/, '').trim();
+                }
+
+                const result = JSON.parse(reply);
+                return {
+                    isCorrect: result.isCorrect === true || result.isCorrect === "true",
+                    explanation: result.explanation || ""
+                };
             } catch (error) {
                 console.error("AI Check failed:", error);
-                return false; // 如果 API 斷線，安全起見當作錯誤
+                return { isCorrect: false, explanation: "AI 系統繁忙，請參考標準答案。" };
             }
         }
 
@@ -833,7 +847,7 @@
         }
 
         // --- 階段二：檢查輸入的句子 (整合 AI) ---
-        async function checkSentence() {
+       async function checkSentence() {
             if (dom.submitSentenceBtn.disabled) return;
             
             sfx.click();
@@ -842,14 +856,13 @@
             const userTyping = dom.englishInput.value;
             const formattedUserInput = formatTextForComparison(userTyping);
             
-            // 將所有正確答案的陣列轉換為可比較的字串
             const correctAnswers = currentQ.correct_tokens.map(arr => arr.join(' '));
             const formattedCorrectAnswers = correctAnswers.map(formatTextForComparison);
             
             let isMatch = formattedCorrectAnswers.includes(formattedUserInput);
             let usedAI = false;
+            let aiExplanation = ""; // 儲存 AI 解釋
             
-            // 鎖定按鈕與輸入框
             dom.submitSentenceBtn.disabled = true;
             dom.englishInput.disabled = true;
 
@@ -857,38 +870,41 @@
             let correctCatName = categories.find(c => c.id === correctCatId).name;
             let ruleDesc = ruleExplanations[currentQ.rule];
 
-            // 如果本地沒對上，且學生有輸入東西，就交給 AI 判斷
+            // 交給 AI 判斷
             if (!isMatch && formattedUserInput !== "") {
                 usedAI = true;
                 dom.submitSentenceBtn.innerText = "🤖 AI 判斷中...";
-                isMatch = await checkAnswerWithAI(userTyping, currentQ.chinese, ruleDesc, correctAnswers[0]);
+                const aiResult = await checkAnswerWithAI(userTyping, currentQ.chinese, ruleDesc, correctAnswers[0]);
+                isMatch = aiResult.isCorrect;
+                aiExplanation = aiResult.explanation;
             }
             
-            // 判斷完畢，隱藏按鈕
             dom.submitSentenceBtn.style.display = 'none';
 
             if (isMatch) {
-                score += 5; // 加上打字的 5 分
+                score += 5; 
                 dom.score.innerText = score;
                 
                 let msg = usedAI ? "🎉 完美！AI 認可了你的同義詞/寫法！" : "🎉 完美！分類與句子完全正確！";
                 let badge = usedAI ? `<span class="ai-badge">AI 判定</span>` : "";
-                showFeedback(true, msg + badge);
                 
+                showFeedback(true, msg + badge);
                 sfx.correct();
-                recordHistory(true, correctCatName, true, userTyping, usedAI);
+                recordHistory(true, correctCatName, true, userTyping, usedAI, aiExplanation);
             } else {
                 let badge = usedAI ? `<span class="ai-badge">AI 判定</span>` : "";
-                showFeedback(false, `❌ 句子有誤！${badge}<br>標準寫法: <strong>${correctAnswers[0]}</strong>`);
+                let explanationHtml = aiExplanation ? `<br><div style="color:#d35400; font-size:15px; margin-top:8px; text-align:left; background:#fff3cd; padding:8px; border-radius:6px; border:1px solid #ffeeba;">🤖 <strong>AI 點評：</strong>${aiExplanation}</div>` : "";
+                
+                showFeedback(false, `❌ 句子有誤！${badge}<br>標準寫法: <strong>${correctAnswers[0]}</strong>${explanationHtml}`);
                 sfx.wrong();
-                recordHistory(true, correctCatName, false, userTyping, usedAI);
+                recordHistory(true, correctCatName, false, userTyping, usedAI, aiExplanation);
             }
             
             showNextBtn();
         }
 
         // 紀錄錯題與歷史
-        function recordHistory(isCatCorrect, userCatName, isSentenceCorrect, userSentence, usedAI) {
+      function recordHistory(isCatCorrect, userCatName, isSentenceCorrect, userSentence, usedAI, aiExplanation = "") {
             let correctCatId = ruleToCategory[currentQ.rule];
             let correctCatName = categories.find(c => c.id === correctCatId).name;
             let correctSentence = currentQ.correct_tokens[0].join(' ');
@@ -905,10 +921,10 @@
                 correctSentence: correctSentence,
                 userSentence: userSentence,
                 usedAI: usedAI,
+                aiExplanation: aiExplanation,
                 explanation: ruleExplanations[currentQ.rule]
             });
         }
-
         function showFeedback(isSuccess, msg) {
             let colorClass = isSuccess ? 'text-correct' : 'text-wrong';
             dom.feedbackArea.innerHTML = `<div class="feedback-text ${colorClass}">${msg}</div>`;
@@ -959,7 +975,7 @@
                                     : `<div style="color:var(--success-color)">✅ <strong>分類正確:</strong> ${item.correctCatName}</div>`
                                 }
                                 ${!item.isSentenceCorrect && item.isCatCorrect
-                                    ? `<div style="color:var(--danger-color)">❌ <strong>句子錯誤:</strong> ${item.userSentence} ${item.usedAI ? '<span class="ai-badge">AI 判定</span>' : ''}</div><div style="color:var(--primary-dark)"><strong>標準答案:</strong> ${item.correctSentence}</div>`
+                                    ? `<div style="color:var(--danger-color)">❌ <strong>句子錯誤:</strong> ${item.userSentence} ${item.usedAI ? '<span class="ai-badge">AI 判定</span>' : ''}</div><div style="color:var(--primary-dark)"><strong>標準答案:</strong> ${item.correctSentence}</div>` + (item.aiExplanation ? `<div style="color:#d35400; margin-top:6px; font-size: 0.9em; background:#fff3cd; padding:6px; border-radius:4px;">🤖 <strong>AI 點評:</strong> ${item.aiExplanation}</div>` : "")
                                     : (!item.isCatCorrect ? `<div style="color:var(--primary-dark)"><strong>正確句子:</strong> ${item.correctSentence}</div>` : "")
                                 }
                                 <div style="font-size:0.9em; color:#666; margin-top:5px; padding-top:5px; border-top:1px dashed #ccc;">💡 <strong>相關規則：</strong>${item.explanation}</div>
@@ -1012,3 +1028,4 @@
     </script>
 </body>
 </html>
+
