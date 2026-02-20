@@ -20,6 +20,7 @@
             --success-color: #2d6a4f;
             --btn-correct: #2a9d8f;
             --btn-wrong: #e76f51;
+            --ai-color: #9b59b6;
         }
 
         html, body {
@@ -224,9 +225,22 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            transition: all 0.3s;
         }
         
-        #submit-sentence-btn:hover { background-color: var(--primary-dark); }
+        #submit-sentence-btn:hover:not(:disabled) { background-color: var(--primary-dark); }
+        
+        #submit-sentence-btn:disabled {
+            background-color: var(--ai-color);
+            cursor: wait;
+            animation: pulse-ai 1.5s infinite;
+        }
+
+        @keyframes pulse-ai {
+            0% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(155, 89, 182, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0); }
+        }
 
         /* 反饋與控制 */
         #feedback-area {
@@ -243,6 +257,18 @@
         .text-correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .text-wrong { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; text-align: left; }
         .explanation-hint { font-size: 14px; color: #555; margin-top: 8px; font-weight: normal;}
+        
+        /* AI 徽章 */
+        .ai-badge {
+            display: inline-block;
+            background-color: var(--ai-color);
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
 
         #controls {
             display: flex;
@@ -324,7 +350,58 @@
 
     <script>
         // ------------------------------------------------------------------
-        // 1. 分類定義與解釋對照表 (根據筆記整理)
+        // ★ 核心 AI API 設置 (OpenRouter - Gemini 2.5 Flash)
+        // ------------------------------------------------------------------
+        const keyPart1 = "sk-or-v1-";
+        const keyPart2 = "99843d0bae6f77f25b0bf50875a3cc23d9556e7e77d73b2a8828e9b690319381"; 
+        const OPENROUTER_API_KEY = keyPart1 + keyPart2;
+
+        async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, standardAnswer) {
+            const prompt = `你是一個專業且寬容的英文老師，正在批改學生的翻譯題。
+中文題目：「${questionChinese}」
+必須使用的文法規則：「${ruleDesc}」
+其中一個標準答案是：「${standardAnswer}」
+
+學生提交的答案：「${studentAnswer}」
+
+請判斷學生的答案是否可以接受。
+判斷標準：
+1. 允許合理的同義詞 (例如 table/desk, picture/photo, colour/color, bag/sack 等)。
+2. 允許美式/英式拼寫差異 (例如 centre/center)。
+3. 允許不影響理解的極微小拼字錯誤。
+4. 句意必須與中文題目一致。
+5. 最重要的一點：必須符合規定的文法規則！如果文法結構錯了（例如該用 of 但用了 's，或者不應該加 s 的量詞加了 s），即使意思對也是錯的。
+
+請僅回覆 "YES" 或 "NO"，不需要任何解釋。`;
+
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": window.location.href, 
+                        "X-Title": "English Grammar Game"
+                    },
+                    body: JSON.stringify({
+                        "model": "google/gemini-2.5-flash", 
+                        "messages": [ {"role": "user", "content": prompt} ]
+                    })
+                });
+
+                if (!response.ok) throw new Error("API error");
+                const data = await response.json();
+                const reply = data.choices[0].message.content.trim().toUpperCase();
+                return reply.includes("YES");
+            } catch (error) {
+                console.error("AI Check failed:", error);
+                return false; // 如果 API 斷線，安全起見當作錯誤
+            }
+        }
+
+
+        // ------------------------------------------------------------------
+        // 1. 分類定義與解釋對照表 
         // ------------------------------------------------------------------
         const categories = [
             { id: 1, name: "簡單形容詞 / 數字+量詞" },
@@ -341,7 +418,6 @@
             { id: 12, name: "時間 + 的" }
         ];
 
-        // 將 rule 轉換成按鈕分類的 ID
         const ruleToCategory = {
             3: 1, 1: 2, 2: 2, 7: 3, 8: 4, 13: 5, 5: 6, 6: 6, 14: 7, 10: 8, 9: 9, 4: 10, 12: 11, 11: 12
         };
@@ -364,7 +440,7 @@
         };
 
         // ------------------------------------------------------------------
-        // 2. 題庫資料 (140題)
+        // 2. 題庫資料 (140題) 
         // ------------------------------------------------------------------
         const questionBank = [
             // Rule 1: 人稱 's
@@ -392,16 +468,16 @@
             { rule: 2, chinese: "日本的歷史", correct_tokens: [ ["Japan's", "history"] ] },
 
             // Rule 3: 數字+量詞+的
-            { rule: 3, chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"] ] },
-            { rule: 3, chinese: "一個十歲的男孩", correct_tokens: [ ["a", "ten-year-old", "boy"] ] },
-            { rule: 3, chinese: "一張一百元的鈔票", correct_tokens: [ ["a", "one-hundred-dollar", "bill"] ] },
-            { rule: 3, chinese: "一個兩小時的會議", correct_tokens: [ ["a", "two-hour", "meeting"] ] },
-            { rule: 3, chinese: "一段三公里的路程", correct_tokens: [ ["a", "three-kilometer", "journey"] ] },
-            { rule: 3, chinese: "一個四星級的酒店", correct_tokens: [ ["a", "four-star", "hotel"] ] },
-            { rule: 3, chinese: "一份五頁的報告", correct_tokens: [ ["a", "five-page", "report"] ] },
-            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"] ] },
-            { rule: 3, chinese: "一段十分鐘的休息", correct_tokens: [ ["a", "ten-minute", "break"] ] },
-            { rule: 3, chinese: "一個七天的假期", correct_tokens: [ ["a", "seven-day", "holiday"] ] },
+            { rule: 3, chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"], ["a", "5-storey", "building"] ] },
+            { rule: 3, chinese: "一個十歲的男孩", correct_tokens: [ ["a", "ten-year-old", "boy"], ["a", "10-year-old", "boy"] ] },
+            { rule: 3, chinese: "一張一百元的鈔票", correct_tokens: [ ["a", "one-hundred-dollar", "bill"], ["a", "100-dollar", "bill"] ] },
+            { rule: 3, chinese: "一個兩小時的會議", correct_tokens: [ ["a", "two-hour", "meeting"], ["a", "2-hour", "meeting"] ] },
+            { rule: 3, chinese: "一段三公里的路程", correct_tokens: [ ["a", "three-kilometer", "journey"], ["a", "3-kilometer", "journey"] ] },
+            { rule: 3, chinese: "一個四星級的酒店", correct_tokens: [ ["a", "four-star", "hotel"], ["a", "4-star", "hotel"] ] },
+            { rule: 3, chinese: "一份五頁的報告", correct_tokens: [ ["a", "five-page", "report"], ["a", "5-page", "report"] ] },
+            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"], ["a", "6-person", "team"] ] },
+            { rule: 3, chinese: "一段十分鐘的休息", correct_tokens: [ ["a", "ten-minute", "break"], ["a", "10-minute", "break"] ] },
+            { rule: 3, chinese: "一個七天的假期", correct_tokens: [ ["a", "seven-day", "holiday"], ["a", "7-day", "holiday"] ] },
 
             // Rule 4: 無生命的 of
             { rule: 4, chinese: "這個袋子的價格", correct_tokens: [ ["the", "price", "of", "the", "bag"] ] },
@@ -410,38 +486,38 @@
             { rule: 4, chinese: "這個電腦的屏幕", correct_tokens: [ ["the", "screen", "of", "the", "computer"] ] },
             { rule: 4, chinese: "香港的人口", correct_tokens: [ ["the", "population", "of", "Hong", "Kong"] ] },
             { rule: 4, chinese: "這首歌的名字", correct_tokens: [ ["the", "name", "of", "this", "song"] ] },
-            { rule: 4, chinese: "這張桌子的顏色", correct_tokens: [ ["the", "color", "of", "this", "table"] ] },
-            { rule: 4, chinese: "成功的關鍵", correct_tokens: [ ["the", "key", "of", "success"] ] },
+            { rule: 4, chinese: "這張桌子的顏色", correct_tokens: [ ["the", "color", "of", "this", "table"], ["the", "colour", "of", "this", "table"] ] },
+            { rule: 4, chinese: "成功的關鍵", correct_tokens: [ ["the", "key", "to", "success"], ["the", "key", "of", "success"] ] },
             { rule: 4, chinese: "這個問題的原因", correct_tokens: [ ["the", "cause", "of", "the", "problem"] ] },
             { rule: 4, chinese: "這個故事的結尾", correct_tokens: [ ["the", "end", "of", "the", "story"] ] },
 
             // Rule 5: 主動動詞
             { rule: 5, chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ] },
             { rule: 5, chinese: "不喜歡我的那個老師", correct_tokens: [ ["the", "teacher", "who", "does", "not","like", "me"] ] },
-            { rule: 5, chinese: "昨天沒有來的學生", correct_tokens: [ ["students", "who", "did", "not","come", "yesterday"] ] },
+            { rule: 5, chinese: "昨天沒有來的學生", correct_tokens: [ ["students", "who", "did", "not","come", "yesterday"], ["the", "students", "who", "did", "not","come", "yesterday"] ] },
             { rule: 5, chinese: "住在隔壁的那個女人", correct_tokens: [ ["the", "woman", "who", "lives", "next", "door"] ] },
-            { rule: 5, chinese: "很多遊客參觀的那個博物館", correct_tokens: [ ["the", "museum", "which", "many", "tourists", "visit"] ] },
-            { rule: 5, chinese: "正在睡覺的那隻貓", correct_tokens: [ ["the", "cat", "which", "is", "sleeping"] ] },
-            { rule: 5, chinese: "正在運行的那台機器", correct_tokens: [ ["the", "machine", "that", "is", "running"] ] },
+            { rule: 5, chinese: "很多遊客參觀的那個博物館", correct_tokens: [ ["the", "museum", "which", "many", "tourists", "visit"], ["the", "museum", "that", "many", "tourists", "visit"] ] },
+            { rule: 5, chinese: "正在睡覺的那隻貓", correct_tokens: [ ["the", "cat", "which", "is", "sleeping"], ["the", "cat", "that", "is", "sleeping"] ] },
+            { rule: 5, chinese: "正在運行的那台機器", correct_tokens: [ ["the", "machine", "which", "is", "running"], ["the", "machine", "that", "is", "running"] ] },
             { rule: 5, chinese: "教英文的那位老師", correct_tokens: [ ["the", "teacher", "who", "teaches", "English"] ] },
-            { rule: 5, chinese: "製造噪音的那些狗", correct_tokens: [ ["the", "dogs", "that", "make", "noise"] ] },
-            { rule: 5, chinese: "喜歡音樂的那些人", correct_tokens: [ ["the", "people", "who", "like", "music"] ] },
-            { rule: 5, chinese: "賣水果的那家店", correct_tokens: [ ["the", "shop", "which", "sells", "fruit"] ] },
-            { rule: 5, chinese: "開得很快的那輛車", correct_tokens: [ ["the", "car", "that", "drives", "very", "fast"] ] },
+            { rule: 5, chinese: "製造噪音的那些狗", correct_tokens: [ ["the", "dogs", "which", "make", "noise"], ["the", "dogs", "that", "make", "noise"] ] },
+            { rule: 5, chinese: "喜歡音樂的那些人", correct_tokens: [ ["the", "people", "who", "like", "music"], ["people", "who", "like", "music"] ] },
+            { rule: 5, chinese: "賣水果的那家店", correct_tokens: [ ["the", "shop", "which", "sells", "fruit"], ["the", "shop", "that", "sells", "fruit"] ] },
+            { rule: 5, chinese: "開得很快的那輛車", correct_tokens: [ ["the", "car", "which", "drives", "very", "fast"], ["the", "car", "that", "drives", "very", "fast"] ] },
 
             // Rule 6: Modal verb
             { rule: 6, chinese: "一個唱得很好的女孩", correct_tokens: [ ["a", "girl", "who", "can", "sing", "well"] ] },
             { rule: 6, chinese: "一個應該被懲罰的學生", correct_tokens: [ ["a", "student", "who", "should", "be", "punished"] ] },
-            { rule: 6, chinese: "一個將會成功的計劃", correct_tokens: [ ["a", "plan", "that", "will", "succeed"] ] },
-            { rule: 6, chinese: "一個可能下雨的日子", correct_tokens: [ ["a", "day", "which", "may", "rain"] ] },
+            { rule: 6, chinese: "一個將會成功的計劃", correct_tokens: [ ["a", "plan", "that", "will", "succeed"], ["a", "plan", "which", "will", "succeed"] ] },
+            { rule: 6, chinese: "一個可能下雨的日子", correct_tokens: [ ["a", "day", "which", "may", "rain"], ["a", "day", "that", "may", "rain"] ] },
             { rule: 6, chinese: "一個必須努力工作的人", correct_tokens: [ ["a", "person", "who", "must", "work", "hard"] ] },
-            { rule: 6, chinese: "一個可以幫助你的人", correct_tokens: [ ["someone", "who", "can", "help", "you"] ] },
-            { rule: 6, chinese: "一個將會改變世界的想法", correct_tokens: [ ["an", "idea", "that", "will", "change", "the", "world"] ] },
+            { rule: 6, chinese: "一個可以幫助你的人", correct_tokens: [ ["someone", "who", "can", "help", "you"], ["a", "person", "who", "can", "help", "you"] ] },
+            { rule: 6, chinese: "一個將會改變世界的想法", correct_tokens: [ ["an", "idea", "that", "will", "change", "the", "world"], ["an", "idea", "which", "will", "change", "the", "world"] ] },
             { rule: 6, chinese: "一個應該更小心的司機", correct_tokens: [ ["a", "driver", "who", "should", "be", "more", "careful"] ] },
             { rule: 6, chinese: "一個可能會遲到的客人", correct_tokens: [ ["a", "guest", "who", "might", "be", "late"] ] },
             { rule: 6, chinese: "一個必須遵守規則的球員", correct_tokens: [ ["a", "player", "who", "must", "follow", "the", "rules"] ] },
 
-            // Rule 7: With (有...的)
+            // Rule 7: With
             { rule: 7, chinese: "一個有長頭髮的女孩", correct_tokens: [ ["a", "girl", "with", "long", "hair"] ] },
             { rule: 7, chinese: "一間有大花園的屋", correct_tokens: [ ["a", "house", "with", "a", "big", "garden"] ] },
             { rule: 7, chinese: "一個有藍眼睛的嬰兒", correct_tokens: [ ["a", "baby", "with", "blue", "eyes"] ] },
@@ -451,15 +527,15 @@
             { rule: 7, chinese: "一件有紅色條紋的襯衫", correct_tokens: [ ["a", "shirt", "with", "red", "stripes"] ] },
             { rule: 7, chinese: "一個有大鼻子的人", correct_tokens: [ ["a", "person", "with", "a", "big", "nose"] ] },
             { rule: 7, chinese: "一部有高解像度屏幕的手機", correct_tokens: [ ["a", "phone", "with", "a", "high", "resolution", "screen"] ] },
-            { rule: 7, chinese: "一個有幽默感的朋友", correct_tokens: [ ["a", "friend", "with", "a", "sense", "of", "humor"] ] },
+            { rule: 7, chinese: "一個有幽默感的朋友", correct_tokens: [ ["a", "friend", "with", "a", "sense", "of", "humor"], ["a", "friend", "with", "a", "sense", "of", "humour"] ] },
 
-            // Rule 8: Without (沒有...的)
-            { rule: 8, chinese: "一個沒有勇氣的人", correct_tokens: [ ["a", "man", "without", "courage"] ] },
+            // Rule 8: Without
+            { rule: 8, chinese: "一個沒有勇氣的人", correct_tokens: [ ["a", "man", "without", "courage"], ["a", "person", "without", "courage"] ] },
             { rule: 8, chinese: "一杯沒有糖的咖啡", correct_tokens: [ ["a", "cup", "of", "coffee", "without", "sugar"] ] },
             { rule: 8, chinese: "一個沒有窗戶的房間", correct_tokens: [ ["a", "room", "without", "windows"] ] },
             { rule: 8, chinese: "一個沒有名字的城市", correct_tokens: [ ["a", "city", "without", "a", "name"] ] },
             { rule: 8, chinese: "一段沒有街燈的路", correct_tokens: [ ["a", "road", "without", "streetlights"] ] },
-            { rule: 8, chinese: "一個沒有手機的學生", correct_tokens: [ ["a", "student", "without", "a", "mobile", "phone"] ] },
+            { rule: 8, chinese: "一個沒有手機的學生", correct_tokens: [ ["a", "student", "without", "a", "mobile", "phone"], ["a", "student", "without", "a", "phone"] ] },
             { rule: 8, chinese: "一隻沒有尾巴的貓", correct_tokens: [ ["a", "cat", "without", "a", "tail"] ] },
             { rule: 8, chinese: "一個沒有理由的決定", correct_tokens: [ ["a", "decision", "without", "a", "reason"] ] },
             { rule: 8, chinese: "一個沒有經驗的工人", correct_tokens: [ ["a", "worker", "without", "experience"] ] },
@@ -496,20 +572,20 @@
             { rule: 11, chinese: "昨天的派對", correct_tokens: [ ["the", "party", "yesterday"] ] },
             { rule: 11, chinese: "將來的世界", correct_tokens: [ ["the", "world", "in", "the", "future"] ] },
             { rule: 11, chinese: "今晚的晚餐", correct_tokens: [ ["the", "dinner", "tonight"] ] },
-            { rule: 11, chinese: "現在的學生", correct_tokens: [ ["students", "nowadays"] ] },
+            { rule: 11, chinese: "現在的學生", correct_tokens: [ ["students", "nowadays"], ["students", "now"] ] },
             { rule: 11, chinese: "早上的課", correct_tokens: [ ["the", "class", "in", "the", "morning"] ] },
             { rule: 11, chinese: "2020年的奧運會", correct_tokens: [ ["the", "Olympics", "in", "2020"] ] },
             { rule: 11, chinese: "週日的野餐", correct_tokens: [ ["the", "picnic", "on", "Sunday"] ] },
 
             // Rule 12: 地點詞
-            { rule: 12, chinese: "那裡的人", correct_tokens: [ ["the", "people", "there"] ] },
-            { rule: 12, chinese: "這裡的食物", correct_tokens: [ ["the", "food", "here"] ] },
+            { rule: 12, chinese: "那裡的人", correct_tokens: [ ["the", "people", "there"], ["people", "there"] ] },
+            { rule: 12, chinese: "這裡的食物", correct_tokens: [ ["the", "food", "here"], ["food", "here"] ] },
             { rule: 12, chinese: "海外的學生", correct_tokens: [ ["students", "overseas"] ] },
             { rule: 12, chinese: "國外的朋友", correct_tokens: [ ["friends", "abroad"] ] },
             { rule: 12, chinese: "樓上的那個房間", correct_tokens: [ ["the", "room", "upstairs"] ] },
-            { rule: 12, chinese: "樓下的那個鄰居", correct_tokens: [ ["the", "neighbor", "downstairs"] ] },
+            { rule: 12, chinese: "樓下的那個鄰居", correct_tokens: [ ["the", "neighbor", "downstairs"], ["the", "neighbour", "downstairs"] ] },
             { rule: 12, chinese: "附近的那個公園", correct_tokens: [ ["the", "park", "nearby"] ] },
-            { rule: 12, chinese: "在桌上的那本書", correct_tokens: [ ["the", "book", "on", "the", "table"] ] },
+            { rule: 12, chinese: "在桌上的那本書", correct_tokens: [ ["the", "book", "on", "the", "table"], ["the", "book", "on", "the", "desk"] ] },
             { rule: 12, chinese: "在香港的商店", correct_tokens: [ ["shops", "in", "Hong", "Kong"] ] },
             { rule: 12, chinese: "在家裡的生活", correct_tokens: [ ["life", "at", "home"] ] },
 
@@ -517,13 +593,13 @@
             { rule: 13, chinese: "一本有關中國的書", correct_tokens: [ ["a", "book", "about", "China"] ] },
             { rule: 13, chinese: "一個關於未來的討論", correct_tokens: [ ["a", "discussion", "about", "the", "future"] ] },
             { rule: 13, chinese: "一個關於愛的故事", correct_tokens: [ ["a", "story", "about", "love"] ] },
-            { rule: 13, chinese: "一部關於戰爭的電影", correct_tokens: [ ["a", "movie", "about", "wars"] ] },
+            { rule: 13, chinese: "一部關於戰爭的電影", correct_tokens: [ ["a", "movie", "about", "wars"], ["a", "movie", "about", "war"], ["a", "film", "about", "war"] ] },
             { rule: 13, chinese: "一則關於天氣的新聞", correct_tokens: [ ["news", "about", "the", "weather"] ] },
-            { rule: 13, chinese: "一個關於健康的節目", correct_tokens: [ ["a", "program", "about", "health"] ] },
+            { rule: 13, chinese: "一個關於健康的節目", correct_tokens: [ ["a", "program", "about", "health"], ["a", "programme", "about", "health"] ] },
             { rule: 13, chinese: "一場關於政治的辯論", correct_tokens: [ ["a", "debate", "about", "politics"] ] },
             { rule: 13, chinese: "一篇關於歷史的文章", correct_tokens: [ ["an", "article", "about", "history"] ] },
             { rule: 13, chinese: "一個關於科學的問題", correct_tokens: [ ["a", "question", "about", "science"] ] },
-            { rule: 13, chinese: "一個關於安全的擔憂", correct_tokens: [ ["a", "worry", "about", "safety"] ] },
+            { rule: 13, chinese: "一個關於安全的擔憂", correct_tokens: [ ["a", "worry", "about", "safety"], ["a", "concern", "about", "safety"] ] },
 
             // Rule 14: 被動動詞 (PP)
             { rule: 14, chinese: "一個被稱為宙斯的男人", correct_tokens: [ ["a", "man", "called", "Zeus"] ] },
@@ -535,7 +611,7 @@
             { rule: 14, chinese: "一封寄給瑪莉的信", correct_tokens: [ ["a", "letter", "sent", "to", "Mary"] ] },
             { rule: 14, chinese: "一個被很多人愛戴的領袖", correct_tokens: [ ["a", "leader", "loved", "by", "many", "people"] ] },
             { rule: 14, chinese: "一間被火燒毀的房子", correct_tokens: [ ["a", "house", "destroyed", "by", "fire"] ] },
-            { rule: 14, chinese: "一個未解決的問題", correct_tokens: [ ["a", "problem", "not", "solved"] ] }
+            { rule: 14, chinese: "一個未解決的問題", correct_tokens: [ ["a", "problem", "not", "solved"], ["an", "unsolved", "problem"] ] }
         ];
 
         // ------------------------------------------------------------------
@@ -649,7 +725,10 @@
             dom.typingArea.style.display = 'none';
             dom.englishInput.value = '';
             dom.englishInput.disabled = false;
+            
             dom.submitSentenceBtn.style.display = 'block';
+            dom.submitSentenceBtn.disabled = false;
+            dom.submitSentenceBtn.innerText = "提交句子";
             
             dom.feedbackArea.innerHTML = '';
             dom.nextBtn.style.display = 'none';
@@ -701,13 +780,13 @@
             if (currentPhase === 1) {
                 Array.from(dom.categoryGrid.children).forEach(btn => btn.disabled = true);
                 showFeedback(false, `⏰ 時間到！<br>正確分類: <strong>${correctCatName}</strong><br>正確句子: <strong>${correctAnsStr}</strong>`);
-                recordHistory(false, "Timeout", false, "Timeout");
+                recordHistory(false, "Timeout", false, "Timeout", false);
                 showNextBtn();
             } else {
                 dom.submitSentenceBtn.style.display = 'none';
                 dom.englishInput.disabled = true;
                 showFeedback(false, `⏰ 時間到！<br>正確句子: <strong>${correctAnsStr}</strong>`);
-                recordHistory(true, correctCatName, false, "Timeout");
+                recordHistory(true, correctCatName, false, "Timeout", false);
                 showNextBtn();
             }
         }
@@ -724,7 +803,7 @@
             let explanation = ruleExplanations[currentQ.rule];
 
             if (selectedId === correctCatId) {
-                // 答對了，加一半分數，進入打字階段
+                // 答對了
                 score += 5;
                 dom.score.innerText = score;
                 sfx.correct();
@@ -735,16 +814,16 @@
                 dom.backBtn.style.display = 'none';
                 
                 currentPhase = 2;
-                startTimer(defaultPhase2Time); // 打字階段重新給 40 秒
+                startTimer(defaultPhase2Time); 
             } else {
-                // 答錯了，直接結束這題，解釋原因
+                // 答錯了
                 sfx.wrong();
                 let msg = `❌ 選擇錯誤！<br>
                            正確分類是：<strong>${correctCatName}</strong><br>
                            <div class="explanation-hint">💡 解釋：${explanation}</div><br>
                            正確句子應為：<strong>${correctAnsStr}</strong>`;
                 showFeedback(false, msg);
-                recordHistory(false, selectedName, false, "(未進入)");
+                recordHistory(false, selectedName, false, "(未進入)", false);
                 showNextBtn();
             }
         }
@@ -753,8 +832,10 @@
             return text.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.,!?;]*$/, '');
         }
 
-        // --- 階段二：檢查輸入的句子 ---
-        function checkSentence() {
+        // --- 階段二：檢查輸入的句子 (整合 AI) ---
+        async function checkSentence() {
+            if (dom.submitSentenceBtn.disabled) return;
+            
             sfx.click();
             stopTimer();
 
@@ -765,30 +846,49 @@
             const correctAnswers = currentQ.correct_tokens.map(arr => arr.join(' '));
             const formattedCorrectAnswers = correctAnswers.map(formatTextForComparison);
             
-            const isMatch = formattedCorrectAnswers.includes(formattedUserInput);
+            let isMatch = formattedCorrectAnswers.includes(formattedUserInput);
+            let usedAI = false;
             
-            dom.submitSentenceBtn.style.display = 'none';
+            // 鎖定按鈕與輸入框
+            dom.submitSentenceBtn.disabled = true;
             dom.englishInput.disabled = true;
 
             let correctCatId = ruleToCategory[currentQ.rule];
             let correctCatName = categories.find(c => c.id === correctCatId).name;
+            let ruleDesc = ruleExplanations[currentQ.rule];
+
+            // 如果本地沒對上，且學生有輸入東西，就交給 AI 判斷
+            if (!isMatch && formattedUserInput !== "") {
+                usedAI = true;
+                dom.submitSentenceBtn.innerText = "🤖 AI 判斷中...";
+                isMatch = await checkAnswerWithAI(userTyping, currentQ.chinese, ruleDesc, correctAnswers[0]);
+            }
+            
+            // 判斷完畢，隱藏按鈕
+            dom.submitSentenceBtn.style.display = 'none';
 
             if (isMatch) {
                 score += 5; // 加上打字的 5 分
                 dom.score.innerText = score;
-                showFeedback(true, "🎉 完美！分類與句子完全正確！");
+                
+                let msg = usedAI ? "🎉 完美！AI 認可了你的同義詞/寫法！" : "🎉 完美！分類與句子完全正確！";
+                let badge = usedAI ? `<span class="ai-badge">AI 判定</span>` : "";
+                showFeedback(true, msg + badge);
+                
                 sfx.correct();
-                recordHistory(true, correctCatName, true, userTyping);
+                recordHistory(true, correctCatName, true, userTyping, usedAI);
             } else {
-                showFeedback(false, `❌ 句子有誤！<br>正確寫法: <strong>${correctAnswers[0]}</strong>`);
+                let badge = usedAI ? `<span class="ai-badge">AI 判定</span>` : "";
+                showFeedback(false, `❌ 句子有誤！${badge}<br>標準寫法: <strong>${correctAnswers[0]}</strong>`);
                 sfx.wrong();
-                recordHistory(true, correctCatName, false, userTyping);
+                recordHistory(true, correctCatName, false, userTyping, usedAI);
             }
+            
             showNextBtn();
         }
 
         // 紀錄錯題與歷史
-        function recordHistory(isCatCorrect, userCatName, isSentenceCorrect, userSentence) {
+        function recordHistory(isCatCorrect, userCatName, isSentenceCorrect, userSentence, usedAI) {
             let correctCatId = ruleToCategory[currentQ.rule];
             let correctCatName = categories.find(c => c.id === correctCatId).name;
             let correctSentence = currentQ.correct_tokens[0].join(' ');
@@ -804,6 +904,7 @@
                 isSentenceCorrect: isSentenceCorrect,
                 correctSentence: correctSentence,
                 userSentence: userSentence,
+                usedAI: usedAI,
                 explanation: ruleExplanations[currentQ.rule]
             });
         }
@@ -858,7 +959,7 @@
                                     : `<div style="color:var(--success-color)">✅ <strong>分類正確:</strong> ${item.correctCatName}</div>`
                                 }
                                 ${!item.isSentenceCorrect && item.isCatCorrect
-                                    ? `<div style="color:var(--danger-color)">❌ <strong>句子錯誤:</strong> ${item.userSentence}</div><div style="color:var(--primary-dark)"><strong>正確答案:</strong> ${item.correctSentence}</div>`
+                                    ? `<div style="color:var(--danger-color)">❌ <strong>句子錯誤:</strong> ${item.userSentence} ${item.usedAI ? '<span class="ai-badge">AI 判定</span>' : ''}</div><div style="color:var(--primary-dark)"><strong>標準答案:</strong> ${item.correctSentence}</div>`
                                     : (!item.isCatCorrect ? `<div style="color:var(--primary-dark)"><strong>正確句子:</strong> ${item.correctSentence}</div>` : "")
                                 }
                                 <div style="font-size:0.9em; color:#666; margin-top:5px; padding-top:5px; border-top:1px dashed #ccc;">💡 <strong>相關規則：</strong>${item.explanation}</div>
@@ -888,7 +989,7 @@
 
         dom.submitSentenceBtn.addEventListener('click', checkSentence);
         dom.englishInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && currentPhase === 2 && !dom.englishInput.disabled) {
+            if (e.key === 'Enter' && currentPhase === 2 && !dom.englishInput.disabled && !dom.submitSentenceBtn.disabled) {
                 if (dom.englishInput.value.trim() === '') {
                     alert("請輸入英文句子！");
                     return;
