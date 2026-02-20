@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英文「的」重組遊戲</title>
+    <title>英文「的」文法訓練</title>
     <style>
-        /* CSS 樣式區域 (保持不變) */
-        
         :root {
             --base-bg: #F1F3F3;       
             --primary-color: #0a9396;   
@@ -36,7 +34,7 @@
 
         #game-container {
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             background-color: #ffffff;
             border-radius: 6px; 
             border: 2px solid var(--border-color);
@@ -52,7 +50,6 @@
             margin-bottom: 20px;
         }
 
-        /* 進度追蹤器樣式 - Timer 空間 */
         #progress-tracker {
             text-align: right;
             font-size: 16px;
@@ -69,7 +66,6 @@
             text-align: left;
         }
         
-        /* 計時條容器樣式 */
         .timer-container {
             flex-basis: 33%; 
             text-align: center;
@@ -85,7 +81,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* 計時條本身 */
         #timer-bar {
             position: absolute;
             top: 0;
@@ -97,7 +92,6 @@
             z-index: 1;
         }
 
-        /* Timer 數字顯示 */
         .timer-display {
             font-size: 20px; 
             font-weight: bold;
@@ -108,14 +102,8 @@
             text-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
         }
         
-        /* 倒數警告樣式 */
-        .timer-warning #timer-bar {
-            background-color: var(--danger-color); 
-        }
-        .timer-warning .timer-display {
-            color: #ffffff; 
-            animation: pulse 0.5s infinite alternate; 
-        }
+        .timer-warning #timer-bar { background-color: var(--danger-color); }
+        .timer-warning .timer-display { animation: pulse 0.5s infinite alternate; }
 
         .question-number {
             color: var(--primary-dark);
@@ -129,10 +117,10 @@
         }
 
         #chinese-prompt {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
             color: var(--text-color);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             padding: 16px;
             background-color: var(--light-bg-1); 
             border-radius: 4px;
@@ -140,161 +128,123 @@
             text-align: center;
         }
 
-        .area-label {
+        .step-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-top: 16px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--light-bg-1);
+            padding-bottom: 4px;
+        }
+
+        /* 12宮格分類按鈕區 */
+        #category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .category-btn {
+            padding: 12px 8px;
             font-size: 14px;
             font-weight: 600;
-            color: #888;
-            margin-top: 16px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        #delete-btn {
-            background: #ffffff;
-            color: var(--danger-color);
-            font-size: 18px;
-            font-weight: bold;
+            color: var(--text-color);
+            background-color: white;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            border-radius: 4px;
-            border: 2px solid var(--danger-color);
-            padding: 4px 12px;
+            text-align: center;
         }
-        #delete-btn:hover {
-            background: var(--danger-color);
+
+        .category-btn:hover {
+            border-color: var(--primary-color);
+            background-color: var(--light-bg-2);
+        }
+
+        .category-btn.selected {
+            background-color: var(--primary-color);
             color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* 文字輸入區 */
+        #english-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            margin-bottom: 10px;
         }
         
-        #answer-area {
-            min-height: 60px;
-            background-color: var(--light-bg-2); 
-            border-radius: 4px;
-            border: 2px dashed var(--secondary-color);
-            padding: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center; 
-            align-content: center; 
-        }
-
-        #token-pool {
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            border: 2px solid var(--border-color);
-            padding: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: flex-start; 
-        }
-
-        .token {
-            padding: 10px 16px;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            user-select: none;
-            background-color: var(--primary-color);
-            border: 2px solid var(--primary-dark);
-            border-radius: 4px; 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-        .token:hover {
-            background-color: var(--primary-dark);
-        }
-
-        #answer-area .token {
-            background-color: var(--secondary-color); 
-            border-color: var(--secondary-dark);
-            cursor: default;
-        }
-        #answer-area .token:hover {
-            background-color: var(--secondary-color); 
+        #english-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.2);
         }
 
         #controls {
             display: flex;
             justify-content: space-between; 
             align-items: center;
-            margin-top: 20px;
+            margin-top: 24px;
             position: relative; 
             height: 48px; 
         }
 
-        #menu-btn {
+        #menu-btn, #check-btn, #restart-btn {
             padding: 12px 24px;
             font-size: 16px;
             font-weight: bold;
-            color: var(--primary-color); 
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-            border-radius: 4px; 
-            border: 2px solid var(--primary-color); 
-            background-color: white; 
-            position: relative; 
-            left: 0;
-        }
-        #menu-btn:hover {
-            background-color: var(--primary-color); 
-            color: white; 
-        }
-        
-        #check-btn, #restart-btn {
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s, border-color 0.2s;
             border-radius: 4px; 
             border: 2px solid;
-            position: absolute; 
-            right: 0; 
+            transition: all 0.2s;
         }
+
+        #menu-btn {
+            color: var(--primary-color); 
+            border-color: var(--primary-color); 
+            background-color: white; 
+        }
+        #menu-btn:hover { background-color: var(--primary-color); color: white; }
         
         #check-btn {
             background-color: var(--primary-color); 
+            color: white;
             border-color: var(--primary-dark);
+            position: absolute; 
+            right: 0; 
         }
-        #check-btn:hover {
-            background-color: var(--primary-dark);
-        }
-        #check-btn:disabled {
-            background-color: #ccc;
-            border-color: #999;
-            cursor: not-allowed;
-        }
-
+        #check-btn:hover { background-color: var(--primary-dark); }
+        
         #restart-btn {
             background-color: var(--danger-color);
+            color: white;
             border-color: var(--danger-dark);
             display: none; 
-            padding: 15px 30px;
-            font-size: 18px;
+            position: absolute; 
+            right: 0; 
         }
-        #restart-btn:hover {
-            background-color: var(--danger-dark);
-        }
+        #restart-btn:hover { background-color: var(--danger-dark); }
 
         #feedback {
-            margin-top: 16px;
+            margin-top: 20px;
             font-size: 16px;
-            font-weight: bold;
             text-align: center;
             min-height: 20px; 
+            padding: 10px;
+            border-radius: 6px;
         }
-        .feedback-correct {
-            color: var(--secondary-dark);
-        }
-        .feedback-incorrect {
-            color: var(--danger-color);
-        }
+        .feedback-correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback-incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .feedback-partial { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
         
         #error-history {
             margin-top: 20px;
@@ -303,34 +253,17 @@
             background-color: #fff0f3;
             border-radius: 4px;
         }
-        .error-item strong {
-            color: var(--text-color);
-            font-size: 16px;
-        }
-        .error-item .wrong-answer {
-            color: var(--danger-color);
-            font-weight: bold;
-            display: block;
-            margin: 5px 0;
-        }
-        .error-item .correct-answer {
-            color: var(--secondary-dark);
-            font-weight: bold;
-            display: block;
-            margin-top: 5px;
-        }
-        .error-item .rule-explanation {
-            font-size: 14px;
-            color: #555;
-            margin-top: 5px;
-            border-top: 1px dotted #ccc;
-            padding-top: 5px;
-        }
+        .error-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; }
+        .error-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .error-item strong { color: var(--text-color); font-size: 16px; display: block; margin-bottom: 8px;}
+        .error-detail { font-size: 15px; margin: 4px 0;}
+        .wrong-text { color: var(--danger-color); font-weight: bold; }
+        .correct-text { color: var(--secondary-dark); font-weight: bold; }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>英文「的」重組遊戲</h1>
+        <h1>英文「的」文法訓練</h1>
 
         <div id="progress-tracker">
             <span class="score-display"></span>
@@ -343,32 +276,26 @@
 
         <div id="chinese-prompt">中文題目會顯示在這裡</div>
 
-        <div class="area-label">
-            <span>作答區 (點擊詞塊以移除)</span>
-            <button id="delete-btn">← 刪除</button>
-        </div>
-        <div id="answer-area"></div>
+        <div class="step-label">第一部分：選擇「的」的類型</div>
+        <div id="category-grid"></div>
 
-        <div class="area-label">詞塊池 (點擊詞塊以放入作答區)</div>
-        <div id="token-pool"></div>
+        <div class="step-label">第二部分：輸入英文句子</div>
+        <input type="text" id="english-input" autocomplete="off" placeholder="例如：a five-storey building">
 
         <div id="feedback"></div>
         
         <div id="controls">
             <button id="menu-btn">返回選單</button>
             <button id="check-btn">檢查答案</button>
-            <button id="restart-btn" style="display: none;">再來一次</button>
+            <button id="restart-btn">再來一次</button>
         </div>
         
-        <div id="error-history" style="display: none;">
-            </div>
-
+        <div id="error-history" style="display: none;"></div>
     </div>
 
     <script>
-        // --- 0. 音效系統 ---
+        // --- 音效系統 ---
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
         function playTone(frequency, type, duration, volume = 0.1) {
             if (!audioContext) return;
             if (audioContext.state === 'suspended') audioContext.resume();
@@ -383,7 +310,6 @@
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + duration);
         }
-
         function audioClickPlay() { playTone(600, 'triangle', 0.1); }
         function audioCorrectPlay() { 
             playTone(660, 'square', 0.08, 0.2); 
@@ -392,274 +318,140 @@
         }
         function audioIncorrectPlay() { playTone(200, 'sawtooth', 0.2); }
         function audioCountdownPlay() { playTone(800, 'square', 0.05, 0.15); }
-        function audioEndPlay() {
-            playTone(523.25, 'sine', 0.1, 0.2); 
-            setTimeout(() => playTone(659.25, 'sine', 0.1, 0.2), 150); 
-            setTimeout(() => playTone(783.99, 'sine', 0.1, 0.2), 300); 
-            setTimeout(() => playTone(1046.50, 'square', 0.4, 0.3), 450); 
-        }
 
-        // --- 1. 常量與變數 ---
-        const TIME_LIMIT_SECONDS = 20; 
-        const TIME_LIMIT_MS = TIME_LIMIT_SECONDS * 1000;
-        let timerInterval;
-        let timeLeft;
-        let isCountingDown = false;
-        let initialGameContainerHtml = ''; 
-        let isFirstRun = true; 
-
-        let gameContainer, promptEl, answerAreaEl, tokenPoolEl, feedbackEl, checkBtn, restartBtn, menuBtn, deleteBtn;
-        let scoreDisplayEl, timerDisplayEl, timerBarEl, questionNumberEl, errorHistoryEl;
-        
-        let totalQuestionsPerGame = 10; 
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let isAnswerChecked = false;
-        let isAnimating = false;
-        let currentGameQuestions = []; 
-        let gameHistory = []; 
-
-        const questionRules = {
-            1: "規則 1：人稱的「的」。使用 's 形式 (例如：my friend's book)。",
-            2: "規則 2：動物或地方的「的」。使用 's 形式 (例如：the cat's toy / Taiwan's culture)。",
-            3: "規則 3：數字+量詞+「的」。使用-來連接數字和量詞形式，量詞不可以加s (例如：a five-storey building)。",
-            4: "規則 4：無生命的「的」。使用 of 形式 (例如：the price of the bag)。",
-            5: "規則 5：後置修飾： 主動動詞「的」(who/which/that)。使用 who/which/that + 動詞...。 (例如：the boy who often cries)",
-            6: "規則 6：後置修飾：modal verb (can/will/should/may/must)「的」(who/which/that)。使用who/which/that + modal verb + 動詞 (a girl who can sing well)",
-            7: "規則 7：後置修飾：有+名詞+的。使用with (a girl with long hair)",
-            8: "規則 8：後置修飾：沒有+名詞+的。使用without (a man without courage)",
-            9: "規則 9：後置修飾：句子+的，可以不用寫who/which/that (a singer everyone likes / a singer who everyone likes)",
-            10: "規則 10：後置修飾：複合形容詞+的，可以不用寫who/which/that 及 be (a girl who is fond of singing / a girl fond of singing)",
-            11: "規則 11：後置修飾：時間詞+的。將時間詞後置在名詞後方，有些要加in/on/at。(people in the past / the meeting tomorrow)",
-            12: "規則 12：後置修飾：地點詞+的。將地點副詞後置在名詞後方，如果有\"在\"，多數要加in / on / at，除了here / there / overseas / abroad",
-            13: "規則 13：關於...的 (about)。使用介詞 about (例如：a book about China)。",
-            14: "規則 14：被動動詞+的。直接將過去分詞 (pp)後置在名詞後方，如果有否定就加not。(a man called \"Zeus\" / a proposal not approved by the boss)",
-        };
-
-        // --- 2. 題目數據 (140 題，每規則 10 題) ---
-        const allQuestions = [
-            // Rule 1: 人稱 's
-            { rule: 1, chinese: "我的朋友的書", correct_tokens: [ ["my", "friend's", "book"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "彼得的車", correct_tokens: [ ["Peter's", "car"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "那個老師的建議", correct_tokens: [ ["the", "teacher's", "advice"] ], distractors: ["of", "a", "is"] },
-            { rule: 1, chinese: "媽媽的禮物", correct_tokens: [ ["mom's", "gift"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "瑪莉的房間", correct_tokens: [ ["Mary's", "room"] ], distractors: ["of", "the", "is", "a"] },
-            { rule: 1, chinese: "那個男孩的玩具", correct_tokens: [ ["that", "boy's", "toy"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "我們老闆的決定", correct_tokens: [ ["our", "boss's", "decision"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "約翰的電腦", correct_tokens: [ ["John's", "computer"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "這女人的手袋", correct_tokens: [ ["this", "woman's", "handbag"] ], distractors: ["of", "the", "is"] },
-            { rule: 1, chinese: "這些學生的筆", correct_tokens: [ ["these", "students'", "pens"] ], distractors: ["those", "student's", "students", "pen"]},
-
-            // Rule 2: 動物/地方 's
-            { rule: 2, chinese: "台灣的文化", correct_tokens: [ ["Taiwan's", "culture"] ], distractors: ["of", "the", "is"] },
-            { rule: 2, chinese: "那隻狗的尾巴", correct_tokens: [ ["the", "dog's", "tail"] ], distractors: ["of", "dogs", "is"] },
-            { rule: 2, chinese: "香港的經濟", correct_tokens: [ ["Hong", "Kong's", "economy"] ], distractors: ["of", "the", "is"] },
-            { rule: 2, chinese: "貓的眼睛", correct_tokens: [ ["the", "cat's", "eyes"] ], distractors: ["of", "cats", "is"] },
-            { rule: 2, chinese: "世界的和平", correct_tokens: [ ["the", "world's", "peace"] ], distractors: ["worlds", "of", "is"] },
-            { rule: 2, chinese: "公司的利潤", correct_tokens: [ ["the", "company's", "profit"] ], distractors: ["of", "companies", "is"] },
-            { rule: 2, chinese: "城市的發展", correct_tokens: [ ["the", "city's", "development"] ], distractors: ["of", "cities", "is"] },
-            { rule: 2, chinese: "獅子的吼聲", correct_tokens: [ ["the", "lion's", "roar"] ], distractors: ["of", "lions", "is"] },
-            { rule: 2, chinese: "我們的學校的規定", correct_tokens: [ ["our", "school's", "rules"] ], distractors: ["of", "schools", "is"] },
-            { rule: 2, chinese: "日本的歷史", correct_tokens: [ ["Japan's", "history"] ], distractors: ["of", "the", "is"] },
-
-            // Rule 3: 數字+量詞+的 (Hyphenated)
-            { rule: 3, chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"] ], distractors: ["five-storeys", "building's", "of"] },
-            { rule: 3, chinese: "一個十歲的男孩", correct: [ ["a", "ten-year-old", "boy"] ], correct_tokens: [ ["a", "ten-year-old", "boy"] ], distractors: ["ten-years-old", "boy's", "of"] },
-            { rule: 3, chinese: "一張一百元的鈔票", correct_tokens: [ ["a", "one-hundred-dollar", "bill"] ], distractors: ["one-hundred-dollars", "bill's", "of"] },
-            { rule: 3, chinese: "一個兩小時的會議", correct_tokens: [ ["a", "two-hour", "meeting"] ], distractors: ["two-hours", "meeting's", "of"] },
-            { rule: 3, chinese: "一段三公里的路程", correct_tokens: [ ["a", "three-kilometer", "journey"] ], distractors: ["three-kilometers", "journey's", "of"] },
-            { rule: 3, chinese: "一個四星級的酒店", correct_tokens: [ ["a", "four-star", "hotel"] ], distractors: ["four-stars", "hotel's", "of"] },
-            { rule: 3, chinese: "一份五頁的報告", correct_tokens: [ ["a", "five-page", "report"] ], distractors: ["five-pages", "report's", "of"] },
-            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"] ], distractors: ["six-people", "team's", "of"] },
-            { rule: 3, chinese: "一段十分鐘的休息", correct_tokens: [ ["a", "ten-minute", "break"] ], distractors: ["ten-minutes", "break's", "of"] },
-            { rule: 3, chinese: "一個七天的假期", correct_tokens: [ ["a", "seven-day", "holiday"] ], distractors: ["seven-days", "holiday's", "of"] },
-
-            // Rule 4: 無生命的 of
-            { rule: 4, chinese: "這個袋子的價格", correct_tokens: [ ["the", "price", "of", "the", "bag"] ], distractors: ["bag's", "is", "prices"] },
-            { rule: 4, chinese: "這本書的封面", correct_tokens: [ ["the", "cover", "of", "the", "book"] ], distractors: ["book's", "is", "covers"] },
-            { rule: 4, chinese: "這間房子的屋頂", correct_tokens: [ ["the", "roof", "of", "the", "house"] ], distractors: ["house's", "is", "roofs"] },
-            { rule: 4, chinese: "這個電腦的屏幕", correct_tokens: [ ["the", "screen", "of", "the", "computer"] ], distractors: ["computer's", "is", "screens"] },
-            { rule: 4, chinese: "香港的人口", correct_tokens: [ ["the", "population", "of", "Hong", "Kong"] ], distractors: ["Hong Kong's", "is", "populations"] },
-            { rule: 4, chinese: "這首歌的名字", correct_tokens: [ ["the", "name", "of", "this", "song"] ], distractors: ["song's", "is", "names"] },
-            { rule: 4, chinese: "這張桌子的顏色", correct_tokens: [ ["the", "color", "of", "this", "table"] ], distractors: ["table's", "is", "colors"] },
-            { rule: 4, chinese: "成功的關鍵", correct_tokens: [ ["the", "key", "of", "success"] ], distractors: ["success's", "is", "keys"] },
-            { rule: 4, chinese: "這個問題的原因", correct_tokens: [ ["the", "cause", "of", "the", "problem"] ], distractors: ["problem's", "is", "causes"] },
-            { rule: 4, chinese: "這個故事的結尾", correct_tokens: [ ["the", "end", "of", "the", "story"] ], distractors: ["story's", "is", "ends"] },
-
-            // Rule 5: 主動動詞 (who/which/that + V)
-            { rule: 5, chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ], distractors: ["cry", "is", "crying"] },
-            { rule: 5, chinese: "不喜歡我的那個老師", correct_tokens: [ ["the", "teacher", "who", "does", "not","like", "me"] ], distractors: ["likes", "is", "I"] },
-            { rule: 5, chinese: "昨天沒有來的學生", correct_tokens: [ ["students", "who", "did", "not","come", "yesterday"] ], distractors: ["came", "student", "do", "did"] },
-            { rule: 5, chinese: "住在隔壁的那個女人", correct_tokens: [ ["the", "woman", "who", "lives", "next", "door"] ], distractors: ["living", "is", "live"] },
-            { rule: 5, chinese: "很多遊客參觀的那個博物館", correct_tokens: [ ["the", "museum", "which", "many", "tourists", "visit"] ], distractors: ["visiting", "is", "visits"] },
-            { rule: 5, chinese: "正在睡覺的那隻貓", correct_tokens: [ ["the", "cat", "which", "is", "sleeping"] ], distractors: ["sleep", "sleeps", "who"] },
-            { rule: 5, chinese: "正在運行的那台機器", correct_tokens: [ ["the", "machine", "that", "is", "running"] ], distractors: ["run", "runs", "who"] },
-            { rule: 5, chinese: "教英文的那位老師", correct_tokens: [ ["the", "teacher", "who", "teaches", "English"] ], distractors: ["teaching", "is", "teach"] },
-            { rule: 5, chinese: "製造噪音的那些狗", correct_tokens: [ ["the", "dogs", "that", "make", "noise"] ], distractors: ["making", "are", "makes"] },
-            { rule: 5, chinese: "喜歡音樂的那些人", correct_tokens: [ ["the", "people", "who", "like", "music"] ], distractors: ["liking", "are", "likes"] },
-            { rule: 5, chinese: "賣水果的那家店", correct_tokens: [ ["the", "shop", "which", "sells", "fruit"] ], distractors: ["selling", "is", "sell"] },
-            { rule: 5, chinese: "開得很快的那輛車", correct_tokens: [ ["the", "car", "that", "drives", "very", "fast"] ], distractors: ["driving", "is", "drive"] },
-
-            // Rule 6: Modal verb (who/which/that + modal)
-            { rule: 6, chinese: "一個唱得很好的女孩", correct_tokens: [ ["a", "girl", "who", "can", "sing", "well"] ], distractors: ["sings", "is", "singing"] },
-            { rule: 6, chinese: "一個應該被懲罰的學生", correct_tokens: [ ["a", "student", "who", "should", "be", "punished"] ], distractors: ["punish", "is", "punishing"] },
-            { rule: 6, chinese: "一個將會成功的計劃", correct_tokens: [ ["a", "plan", "that", "will", "succeed"] ], distractors: ["succeeds", "is", "succeeding"] },
-            { rule: 6, chinese: "一個可能下雨的日子", correct_tokens: [ ["a", "day", "which", "may", "rain"] ], distractors: ["rains", "is", "raining"] },
-            { rule: 6, chinese: "一個必須努力工作的人", correct_tokens: [ ["a", "person", "who", "must", "work", "hard"] ], distractors: ["works", "is", "working"] },
-            { rule: 6, chinese: "一個可以幫助你的人", correct_tokens: [ ["someone", "who", "can", "help", "you"] ], distractors: ["helps", "is", "helping"] },
-            { rule: 6, chinese: "一個將會改變世界的想法", correct_tokens: [ ["an", "idea", "that", "will", "change", "the", "world"] ], distractors: ["changes", "is", "changing"] },
-            { rule: 6, chinese: "一個應該更小心的司機", correct_tokens: [ ["a", "driver", "who", "should", "be", "more", "careful"] ], distractors: ["is", "are", "being"] },
-            { rule: 6, chinese: "一個可能會遲到的客人", correct_tokens: [ ["a", "guest", "who", "might", "be", "late"] ], distractors: ["is", "are", "being"] },
-            { rule: 6, chinese: "一個必須遵守規則的球員", correct_tokens: [ ["a", "player", "who", "must", "follow", "the", "rules"] ], distractors: ["follows", "is", "following"] },
-
-            // Rule 7: With (有...的)
-            { rule: 7, chinese: "一個有長頭髮的女孩", correct_tokens: [ ["a", "girl", "with", "long", "hair"] ], distractors: ["has", "having", "who"] },
-            { rule: 7, chinese: "一間有大花園的屋", correct_tokens: [ ["a", "house", "with", "a", "big", "garden"] ], distractors: ["has", "having", "which"] },
-            { rule: 7, chinese: "一個有藍眼睛的嬰兒", correct_tokens: [ ["a", "baby", "with", "blue", "eyes"] ], distractors: ["has", "having", "who"] },
-            { rule: 7, chinese: "一本有許多圖片的書", correct_tokens: [ ["a", "book", "with", "many", "pictures"] ], distractors: ["has", "having", "which"] },
-            { rule: 7, chinese: "一個有豐富經驗的人", correct_tokens: [ ["a", "person", "with", "rich", "experience"] ], distractors: ["has", "having", "who"] },
-            { rule: 7, chinese: "一張有花紋的桌子", correct_tokens: [ ["a", "table", "with", "floral", "patterns"] ], distractors: ["has", "having", "which"] },
-            { rule: 7, chinese: "一件有紅色條紋的襯衫", correct_tokens: [ ["a", "shirt", "with", "red", "stripes"] ], distractors: ["has", "having", "which"] },
-            { rule: 7, chinese: "一個有大鼻子的人", correct_tokens: [ ["a", "person", "with", "a", "big", "nose"] ], distractors: ["has", "having", "who"] },
-            { rule: 7, chinese: "一部有高解像度屏幕的手機", correct_tokens: [ ["a", "phone", "with", "a", "high", "resolution", "screen"] ], distractors: ["has", "having", "which"] },
-            { rule: 7, chinese: "一個有幽默感的朋友", correct_tokens: [ ["a", "friend", "with", "a", "sense", "of", "humor"] ], distractors: ["has", "having", "who"] },
-
-            // Rule 8: Without (沒有...的)
-            { rule: 8, chinese: "一個沒有勇氣的人", correct_tokens: [ ["a", "man", "without", "courage"] ], distractors: ["no", "not", "who"] },
-            { rule: 8, chinese: "一杯沒有糖的咖啡", correct_tokens: [ ["a", "cup", "of", "coffee", "without", "sugar"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一個沒有窗戶的房間", correct_tokens: [ ["a", "room", "without", "windows"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一個沒有名字的城市", correct_tokens: [ ["a", "city", "without", "a", "name"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一段沒有街燈的路", correct_tokens: [ ["a", "road", "without", "streetlights"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一個沒有手機的學生", correct_tokens: [ ["a", "student", "without", "a", "mobile", "phone"] ], distractors: ["no", "not", "who"] },
-            { rule: 8, chinese: "一隻沒有尾巴的貓", correct_tokens: [ ["a", "cat", "without", "a", "tail"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一個沒有理由的決定", correct_tokens: [ ["a", "decision", "without", "a", "reason"] ], distractors: ["no", "not", "which"] },
-            { rule: 8, chinese: "一個沒有經驗的工人", correct_tokens: [ ["a", "worker", "without", "experience"] ], distractors: ["no", "not", "who"] },
-            { rule: 8, chinese: "一個沒有朋友的小孩", correct_tokens: [ ["a", "child", "without", "friends"] ], distractors: ["no", "not", "which"] },
-
-            // Rule 9: 句子+的 (Omitting relative pronoun)
-            { rule: 9, chinese: "每個人都喜歡的那個歌手", correct_tokens: [ ["the", "singer", "everyone", "likes"], ["the", "singer", "who", "everyone", "likes"] ], distractors: ["is", "like", "liking"] },
-            { rule: 9, chinese: "我昨天買的那本書", correct_tokens: [ ["the", "book", "I", "bought", "yesterday"], ["the", "book", "which", "I", "bought", "yesterday"] ], distractors: ["buy", "is", "buying"] },
-            { rule: 9, chinese: "我們正在談論的那部電影", correct_tokens: [ ["the", "movie", "we", "are", "talking", "about"], ["the", "movie", "which", "we", "are", "talking", "about"] ], distractors: ["is", "talk", "talks"] },
-            { rule: 9, chinese: "你給我的那個禮物", correct_tokens: [ ["the", "gift", "you", "gave", "me"], ["the", "gift", "which", "you", "gave", "me"] ], distractors: ["give", "is", "giving"] },
-            { rule: 9, chinese: "我想去的地方", correct_tokens: [ ["the", "place", "I", "want", "to", "go"], ["the", "place", "where", "I", "want", "to", "go"] ], distractors: ["is", "go", "going"] },
-            { rule: 9, chinese: "他告訴我的那個故事", correct_tokens: [ ["the", "story", "he", "told", "me"], ["the", "story", "which", "he", "told", "me"] ], distractors: ["tell", "is", "telling"] },
-            { rule: 9, chinese: "你做的食物", correct_tokens: [ ["the", "food", "you", "cooked"], ["the", "food", "which", "you", "cooked"] ], distractors: ["cook", "is", "cooking"] },
-            { rule: 9, chinese: "我認識的那個人", correct_tokens: [ ["the", "person", "I", "know"], ["the", "person", "who", "I", "know"] ], distractors: ["is", "knowing", "knows"] },
-            { rule: 9, chinese: "我們住的房子", correct_tokens: [ ["the", "house", "we", "live", "in"], ["the", "house", "which", "we", "live", "in"] ], distractors: ["is", "living", "lives"] },
-            { rule: 9, chinese: "你正在尋找的答案", correct_tokens: [ ["the", "answer", "you", "are", "looking", "for"], ["the", "answer", "which", "you", "are", "looking", "for"] ], distractors: ["is", "look", "looked"] },
-
-            // Rule 10: 複合形容詞+的 (Reduced relative clause with adj)
-            { rule: 10, chinese: "一個熱愛唱歌的女孩", correct_tokens: [ ["a", "girl", "fond", "of", "singing"], ["a", "girl", "who", "is", "fond", "of", "singing"] ], distractors: ["is", "who", "likes"] },
-            { rule: 10, chinese: "一本充滿圖片的書", correct_tokens: [ ["a", "book", "full", "of", "pictures"], ["a", "book", "which", "is", "full", "of", "pictures"] ], distractors: ["is", "which", "has"] },
-            { rule: 10, chinese: "一個對電腦熟悉的男孩", correct_tokens: [ ["a", "boy", "familiar", "with", "computers"], ["a", "boy", "who", "is", "familiar", "with", "computers"] ], distractors: ["is", "who", "knows"] },
-            { rule: 10, chinese: "一個對健康有害的習慣", correct_tokens: [ ["a", "habit", "harmful", "to", "health"], ["a", "habit", "which", "is", "harmful", "to", "health"] ], distractors: ["is", "which", "has"] },
-            { rule: 10, chinese: "一個對每個人都友善的人", correct_tokens: [ ["a", "person", "friendly", "to", "everyone"], ["a", "person", "who", "is", "friendly", "to", "everyone"] ], distractors: ["is", "who", "likes"] },
-            { rule: 10, chinese: "一個可以使用的房間", correct_tokens: [ ["a", "room", "available", "for", "use"], ["a", "room", "which", "is", "available", "for", "use"] ], distractors: ["is", "which", "can"] },
-            { rule: 10, chinese: "一個對這個提議感興趣的人", correct_tokens: [ ["a", "person", "interested", "in", "the", "proposal"], ["a", "person", "who", "is", "interested", "in", "the", "proposal"] ], distractors: ["is", "who", "likes"] },
-            { rule: 10, chinese: "一個能夠做這項工作的人", correct_tokens: [ ["a", "person", "capable", "of", "doing", "the", "job"], ["a", "person", "who", "is", "capable", "of", "doing", "the", "job"] ], distractors: ["is", "who", "can"] },
-            { rule: 10, chinese: "一個對這個項目負責的經理", correct_tokens: [ ["a", "manager", "responsible", "for", "the", "project"], ["a", "manager", "who", "is", "responsible", "for", "the", "project"] ], distractors: ["is", "who", "has"] },
-            { rule: 10, chinese: "一個類似於我的想法", correct_tokens: [ ["an", "idea", "similar", "to", "mine"], ["an", "idea", "which", "is", "similar", "to", "mine"] ], distractors: ["is", "which", "has"] },
-
-            // Rule 11: 時間詞 (Time adv)
-            { rule: 11, chinese: "過去的人們", correct_tokens: [ ["people", "in", "the", "past"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "明天的那個會議", correct_tokens: [ ["the", "meeting", "tomorrow"] ], distractors: ["of", "'s", "in"] },
-            { rule: 11, chinese: "今天的那份報紙", correct_tokens: [ ["the", "newspaper", "today"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "昨天的派對", correct_tokens: [ ["the", "party", "yesterday"] ], distractors: ["of", "'s", "on"] },
-            { rule: 11, chinese: "將來的世界", correct_tokens: [ ["the", "world", "in", "the", "future"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "今晚的晚餐", correct_tokens: [ ["the", "dinner", "tonight"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "現在的學生", correct_tokens: [ ["students", "nowadays"] ], distractors: ["of", "'s", "in"] },
-            { rule: 11, chinese: "早上的課", correct_tokens: [ ["the", "class", "in", "the", "morning"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "2020年的奧運會", correct_tokens: [ ["the", "Olympics", "in", "2020"] ], distractors: ["of", "'s", "at"] },
-            { rule: 11, chinese: "週日的野餐", correct_tokens: [ ["the", "picnic", "on", "Sunday"] ], distractors: ["of", "'s", "in"] },
-
-            // Rule 12: 地點詞 (Place adv)
-            { rule: 12, chinese: "那裡的人", correct_tokens: [ ["the", "people", "there"] ], distractors: ["of", "'s", "in"] },
-            { rule: 12, chinese: "這裡的食物", correct_tokens: [ ["the", "food", "here"] ], distractors: ["of", "'s", "at"] },
-            { rule: 12, chinese: "海外的學生", correct_tokens: [ ["students", "overseas"] ], distractors: ["of", "'s", "in"] },
-            { rule: 12, chinese: "國外的朋友", correct_tokens: [ ["friends", "abroad"] ], distractors: ["of", "'s", "at"] },
-            { rule: 12, chinese: "樓上的那個房間", correct_tokens: [ ["the", "room", "upstairs"] ], distractors: ["of", "'s", "on"] },
-            { rule: 12, chinese: "樓下的那個鄰居", correct_tokens: [ ["the", "neighbor", "downstairs"] ], distractors: ["of", "'s", "in"] },
-            { rule: 12, chinese: "附近的那個公園", correct_tokens: [ ["the", "park", "nearby"] ], distractors: ["of", "'s", "at"] },
-            { rule: 12, chinese: "在桌上的那本書", correct_tokens: [ ["the", "book", "on", "the", "table"] ], distractors: ["of", "'s", "is"] },
-            { rule: 12, chinese: "在香港的商店", correct_tokens: [ ["shops", "in", "Hong", "Kong"] ], distractors: ["of", "'s", "at"] },
-            { rule: 12, chinese: "在家裡的生活", correct_tokens: [ ["life", "at", "home"] ], distractors: ["of", "'s", "in"] },
-
-            // Rule 13: About
-            { rule: 13, chinese: "一本有關中國的書", correct_tokens: [ ["a", "book", "about", "China"] ], distractors: ["of", "'s", "for"] },
-            { rule: 13, chinese: "一個關於未來的討論", correct_tokens: [ ["a", "discussion", "about", "the", "future"] ], distractors: ["of", "'s", "on"] },
-            { rule: 13, chinese: "一個關於愛的故事", correct_tokens: [ ["a", "story", "about", "love"] ], distractors: ["of", "'s", "for"] },
-            { rule: 13, chinese: "一部關於戰爭的電影", correct_tokens: [ ["a", "movie", "about", "wars"] ], distractors: ["of", "'s", "in"] },
-            { rule: 13, chinese: "一則關於天氣的新聞", correct_tokens: [ ["news", "about", "the", "weather"] ], distractors: ["of", "'s", "for"] },
-            { rule: 13, chinese: "一個關於健康的節目", correct_tokens: [ ["a", "program", "about", "health"] ], distractors: ["of", "'s", "on"] },
-            { rule: 13, chinese: "一場關於政治的辯論", correct_tokens: [ ["a", "debate", "about", "politics"] ], distractors: ["of", "'s", "in"] },
-            { rule: 13, chinese: "一篇關於歷史的文章", correct_tokens: [ ["an", "article", "about", "history"] ], distractors: ["of", "'s", "on"] },
-            { rule: 13, chinese: "一個關於科學的問題", correct_tokens: [ ["a", "question", "about", "science"] ], distractors: ["of", "'s", "for"] },
-            { rule: 13, chinese: "一個關於安全的擔憂", correct_tokens: [ ["a", "worry", "about", "safety"] ], distractors: ["of", "'s", "in"] },
-
-            // Rule 14: 被動動詞 (PP)
-            { rule: 14, chinese: "一個被稱為宙斯的男人", correct_tokens: [ ["a", "man", "called", "Zeus"] ], distractors: ["calling", "is", "who"] },
-            { rule: 14, chinese: "一份未被老闆批准的提議", correct_tokens: [ ["a", "proposal", "not", "approved", "by", "the", "boss"] ], distractors: ["approving", "is", "which"] },
-            { rule: 14, chinese: "一本用英語寫的書", correct_tokens: [ ["a", "book", "written", "in", "English"] ], distractors: ["writing", "is", "which"] },
-            { rule: 14, chinese: "一個被邀請參加派對的客人", correct_tokens: [ ["a", "guest", "invited", "to", "the", "party"] ], distractors: ["inviting", "is", "who"] },
-            { rule: 14, chinese: "一輛日本製造的車", correct_tokens: [ ["a", "car", "made", "in", "Japan"] ], distractors: ["making", "is", "which"] },
-            { rule: 14, chinese: "一個被警察抓住的小偷", correct_tokens: [ ["a", "thief", "caught", "by", "the", "police"] ], distractors: ["catching", "is", "who"] },
-            { rule: 14, chinese: "一封寄給瑪莉的信", correct_tokens: [ ["a", "letter", "sent", "to", "Mary"] ], distractors: ["sending", "is", "which"] },
-            { rule: 14, chinese: "一個被很多人愛戴的領袖", correct_tokens: [ ["a", "leader", "loved", "by", "many", "people"] ], distractors: ["loving", "is", "who"] },
-            { rule: 14, chinese: "一間被火燒毀的房子", correct_tokens: [ ["a", "house", "destroyed", "by", "fire"] ], distractors: ["destroying", "is", "which"] },
-            { rule: 14, chinese: "一個未解決的問題", correct_tokens: [ ["a", "problem", "not", "solved"] ], distractors: ["solving", "is", "which"] }
+        // --- 12 種「的」分類定義 ---
+        const categories = [
+            { id: 1, name: "簡單形容詞 / 數字+量詞" },
+            { id: 2, name: "有生命的 (人/動物/地方 's)" },
+            { id: 3, name: "有...的 (with)" },
+            { id: 4, name: "沒有...的 (without)" },
+            { id: 5, name: "關於...的 (about)" },
+            { id: 6, name: "主動動詞 / Modal Verb" },
+            { id: 7, name: "被動動詞 (p.p.)" },
+            { id: 8, name: "複合形容詞 (afraid of...等)" },
+            { id: 9, name: "句子 + 的" },
+            { id: 10, name: "死物的死物 (the...of...)" },
+            { id: 11, name: "地方 + 的" },
+            { id: 12, name: "時間 + 的" }
         ];
 
+        // 規則對應到 Category ID 的映射表
+        const ruleToCategory = {
+            3: 1,   // Rule 3: 數字+量詞 -> Cat 1
+            1: 2,   // Rule 1: 人稱 -> Cat 2
+            2: 2,   // Rule 2: 動物/地方 -> Cat 2
+            7: 3,   // Rule 7: with -> Cat 3
+            8: 4,   // Rule 8: without -> Cat 4
+            13: 5,  // Rule 13: about -> Cat 5
+            5: 6,   // Rule 5: 主動動詞 -> Cat 6
+            6: 6,   // Rule 6: Modal verb -> Cat 6
+            14: 7,  // Rule 14: 被動動詞 -> Cat 7
+            10: 8,  // Rule 10: 複合形容詞 -> Cat 8
+            9: 9,   // Rule 9: 句子+的 -> Cat 9
+            4: 10,  // Rule 4: 死物的死物 -> Cat 10
+            12: 11, // Rule 12: 地方詞 -> Cat 11
+            11: 12  // Rule 11: 時間詞 -> Cat 12
+        };
 
-        // --- 3. 核心 DOM 獲取 ---
+        // --- 題目數據 (沿用原有數據並對應新分類) ---
+        const allQuestions = [
+            // Rule 1 & 2 -> Category 2
+            { rule: 1, chinese: "我的朋友的書", correct_tokens: [ ["my", "friend's", "book"] ] },
+            { rule: 1, chinese: "彼得的車", correct_tokens: [ ["Peter's", "car"] ] },
+            { rule: 2, chinese: "台灣的文化", correct_tokens: [ ["Taiwan's", "culture"] ] },
+            { rule: 2, chinese: "那隻狗的尾巴", correct_tokens: [ ["the", "dog's", "tail"] ] },
+            // Rule 3 -> Category 1
+            { rule: 3, chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"] ] },
+            { rule: 3, chinese: "一個十歲的男孩", correct_tokens: [ ["a", "ten-year-old", "boy"] ] },
+            { rule: 3, chinese: "一張一百元的鈔票", correct_tokens: [ ["a", "one-hundred-dollar", "bill"] ] },
+            // Rule 4 -> Category 10
+            { rule: 4, chinese: "這個袋子的價格", correct_tokens: [ ["the", "price", "of", "the", "bag"] ] },
+            { rule: 4, chinese: "這本書的封面", correct_tokens: [ ["the", "cover", "of", "the", "book"] ] },
+            // Rule 5 & 6 -> Category 6
+            { rule: 5, chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ] },
+            { rule: 5, chinese: "教英文的那位老師", correct_tokens: [ ["the", "teacher", "who", "teaches", "English"] ] },
+            { rule: 6, chinese: "一個唱得很好的女孩", correct_tokens: [ ["a", "girl", "who", "can", "sing", "well"] ] },
+            { rule: 6, chinese: "一個可以幫助你的人", correct_tokens: [ ["someone", "who", "can", "help", "you"] ] },
+            // Rule 7 -> Category 3
+            { rule: 7, chinese: "一個有長頭髮的女孩", correct_tokens: [ ["a", "girl", "with", "long", "hair"] ] },
+            { rule: 7, chinese: "一間有大花園的屋", correct_tokens: [ ["a", "house", "with", "a", "big", "garden"] ] },
+            // Rule 8 -> Category 4
+            { rule: 8, chinese: "一個沒有勇氣的人", correct_tokens: [ ["a", "man", "without", "courage"] ] },
+            { rule: 8, chinese: "一杯沒有糖的咖啡", correct_tokens: [ ["a", "cup", "of", "coffee", "without", "sugar"] ] },
+            // Rule 9 -> Category 9
+            { rule: 9, chinese: "每個人都喜歡的那個歌手", correct_tokens: [ ["the", "singer", "everyone", "likes"], ["the", "singer", "who", "everyone", "likes"] ] },
+            { rule: 9, chinese: "我昨天買的那本書", correct_tokens: [ ["the", "book", "I", "bought", "yesterday"], ["the", "book", "which", "I", "bought", "yesterday"] ] },
+            // Rule 10 -> Category 8
+            { rule: 10, chinese: "一個熱愛唱歌的女孩", correct_tokens: [ ["a", "girl", "fond", "of", "singing"], ["a", "girl", "who", "is", "fond", "of", "singing"] ] },
+            { rule: 10, chinese: "一本充滿圖片的書", correct_tokens: [ ["a", "book", "full", "of", "pictures"], ["a", "book", "which", "is", "full", "of", "pictures"] ] },
+            // Rule 11 -> Category 12
+            { rule: 11, chinese: "過去的人們", correct_tokens: [ ["people", "in", "the", "past"] ] },
+            { rule: 11, chinese: "明天的那個會議", correct_tokens: [ ["the", "meeting", "tomorrow"] ] },
+            // Rule 12 -> Category 11
+            { rule: 12, chinese: "那裡的人", correct_tokens: [ ["the", "people", "there"] ] },
+            { rule: 12, chinese: "在桌上的那本書", correct_tokens: [ ["the", "book", "on", "the", "table"] ] },
+            // Rule 13 -> Category 5
+            { rule: 13, chinese: "一本有關中國的書", correct_tokens: [ ["a", "book", "about", "China"] ] },
+            { rule: 13, chinese: "一個關於未來的討論", correct_tokens: [ ["a", "discussion", "about", "the", "future"] ] },
+            // Rule 14 -> Category 7
+            { rule: 14, chinese: "一個被稱為宙斯的男人", correct_tokens: [ ["a", "man", "called", "Zeus"] ] },
+            { rule: 14, chinese: "一本用英語寫的書", correct_tokens: [ ["a", "book", "written", "in", "English"] ] }
+        ];
+
+        // --- 遊戲變數 ---
+        const TIME_LIMIT_SECONDS = 40; // 考慮到要打字，給予更多時間
+        const TIME_LIMIT_MS = TIME_LIMIT_SECONDS * 1000;
+        let timerInterval, timeLeft;
+        let currentQuestionIndex = 0, score = 0;
+        let isAnswerChecked = false;
+        let currentGameQuestions = []; 
+        let gameHistory = []; 
+        let selectedCategoryId = null;
+
+        let promptEl, categoryGridEl, englishInputEl, feedbackEl, errorHistoryEl;
+        let checkBtn, restartBtn, menuBtn, scoreDisplayEl, timerDisplayEl, timerBarEl, questionNumberEl;
+
         function getDOMElements() {
-            gameContainer = document.getElementById('game-container');
             promptEl = document.getElementById('chinese-prompt');
-            answerAreaEl = document.getElementById('answer-area');
-            tokenPoolEl = document.getElementById('token-pool');
+            categoryGridEl = document.getElementById('category-grid');
+            englishInputEl = document.getElementById('english-input');
             feedbackEl = document.getElementById('feedback');
             errorHistoryEl = document.getElementById('error-history');
-
             checkBtn = document.getElementById('check-btn');
             restartBtn = document.getElementById('restart-btn');
             menuBtn = document.getElementById('menu-btn'); 
-            deleteBtn = document.getElementById('delete-btn');
-
-            const progressEl = document.getElementById('progress-tracker');
-            scoreDisplayEl = progressEl ? progressEl.querySelector('.score-display') : null;
-            timerDisplayEl = progressEl ? progressEl.querySelector('.timer-display') : null;
-            timerBarEl = progressEl ? document.getElementById('timer-bar') : null;
-            questionNumberEl = progressEl ? progressEl.querySelector('.question-number') : null;
+            
+            scoreDisplayEl = document.querySelector('.score-display');
+            timerDisplayEl = document.querySelector('.timer-display');
+            timerBarEl = document.getElementById('timer-bar');
+            questionNumberEl = document.querySelector('.question-number');
         }
 
-        function updateIframeHeight() { 
-            if (!window.parent) return; 
-            setTimeout(() => { 
-                const bodyHeight = document.body.scrollHeight; 
-                window.parent.postMessage({ height: bodyHeight, frameId: 'enguistics-game-iframe' }, '*'); 
-            }, 100); 
+        function renderCategoryButtons() {
+            categoryGridEl.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.innerText = cat.name;
+                btn.onclick = () => {
+                    if(isAnswerChecked) return;
+                    audioClickPlay();
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedCategoryId = cat.id;
+                };
+                categoryGridEl.appendChild(btn);
+            });
         }
 
-        // --- 4. Timer 核心功能 (已更新倒數音效) ---
         function startTimer() {
             stopTimer();
             timeLeft = TIME_LIMIT_MS;
-            isCountingDown = true;
             const startTime = Date.now();
-            let lastTickStep = 1000; 
-            
             document.body.classList.remove('timer-warning');
             
             timerInterval = setInterval(() => {
-                const elapsedTime = Date.now() - startTime;
-                timeLeft = TIME_LIMIT_MS - elapsedTime;
-
-                if (timeLeft <= 3000 && timeLeft > 0) {
-                    const currentStep = Math.ceil(timeLeft / 500);
-                    if (currentStep < lastTickStep && currentStep > 0) {
-                        audioCountdownPlay(); 
-                        lastTickStep = currentStep;
-                    }
-                }
+                timeLeft = TIME_LIMIT_MS - (Date.now() - startTime);
 
                 if (timeLeft <= 0) {
                     timeLeft = 0;
@@ -668,319 +460,191 @@
                 }
 
                 const seconds = Math.floor(timeLeft / 1000);
-                const milliseconds = Math.floor((timeLeft % 1000) / 100);
-                timerDisplayEl.innerText = `${seconds}.${milliseconds}`;
+                timerDisplayEl.innerText = `${seconds}.0`;
+                timerBarEl.style.width = `${Math.max(0, (timeLeft / TIME_LIMIT_MS) * 100)}%`; 
                 
-                const barWidth = (timeLeft / TIME_LIMIT_MS) * 100;
-                timerBarEl.style.width = `${Math.max(0, barWidth)}%`; 
-                
-                if (timeLeft <= 5000) {
-                    document.body.classList.add('timer-warning');
-                } else {
-                    document.body.classList.remove('timer-warning');
-                }
+                if (timeLeft <= 5000) document.body.classList.add('timer-warning');
             }, 100);
         }
 
         function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                isCountingDown = false;
-            }
+            if (timerInterval) clearInterval(timerInterval);
         }
 
-        // --- 5. 詞塊互動邏輯 (保持不變) ---
-        function addToken(event) {
-            if (isAnswerChecked || isAnimating || !isCountingDown) return; 
-            const tokenEl = event.target;
-            audioClickPlay(); 
-            
-            const newAnswerToken = document.createElement('div');
-            newAnswerToken.className = 'token';
-            newAnswerToken.innerText = tokenEl.innerText;
-            
-            answerAreaEl.appendChild(newAnswerToken);
-            
-            tokenPoolEl.removeChild(tokenEl);
-            
-            updateIframeHeight();
-        }
-
-        function deleteLastToken() {
-            if (isAnswerChecked || isAnimating || !isCountingDown) return; 
-            if (answerAreaEl.children.length > 0) {
-                audioClickPlay(); 
-                const lastToken = answerAreaEl.lastChild;
-                removeTokenFromAnswerArea(lastToken);
-            }
-            updateIframeHeight();
-        }
-
-        function removeTokenFromAnswerArea(tokenEl) {
-            answerAreaEl.removeChild(tokenEl);
-
-            const newToken = document.createElement('div');
-            newToken.className = 'token';
-            newToken.innerText = tokenEl.innerText;
-            newToken.addEventListener('click', addToken);
-
-            const tokenText = newToken.innerText.toLowerCase();
-            const tokensArray = Array.from(tokenPoolEl.children);
-            
-            let inserted = false;
-            for (let i = 0; i < tokensArray.length; i++) {
-                if (tokenText < tokensArray[i].innerText.toLowerCase()) {
-                    tokenPoolEl.insertBefore(newToken, tokensArray[i]);
-                    inserted = true;
-                    break;
-                }
-            }
-            if (!inserted) {
-                tokenPoolEl.appendChild(newToken);
-            }
-            updateIframeHeight();
-        }
-        
-        // --- 6. 遊戲流程控制 ---
-
-        // 1. 遊戲開始
         function startGame() {
-            if (!isFirstRun) {
-                gameContainer.innerHTML = initialGameContainerHtml; 
-                getDOMElements(); 
-                bindEventListeners(); 
-            }
-            
-            isFirstRun = false; 
-
+            getDOMElements();
             currentQuestionIndex = 0;
             score = 0;
             gameHistory = [];
             
-            if(timerDisplayEl) timerDisplayEl.innerText = `${TIME_LIMIT_SECONDS}.0`;
+            // 隨機抽取 10 題
+            currentGameQuestions = [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 10);
             
-            currentGameQuestions = shuffleArray([...allQuestions]);
-            totalQuestionsPerGame = Math.min(10, currentGameQuestions.length); 
-
+            renderCategoryButtons();
             loadQuestion();
-            updateIframeHeight();
         }
 
-        // 2. 加載下一道題目
         function loadQuestion() {
             isAnswerChecked = false;
-            isAnimating = false;
+            selectedCategoryId = null;
+            englishInputEl.value = '';
+            englishInputEl.disabled = false;
+            feedbackEl.className = '';
+            feedbackEl.innerHTML = '';
             errorHistoryEl.style.display = 'none'; 
-
-            answerAreaEl.innerHTML = "";
-            tokenPoolEl.innerHTML = "";
-            feedbackEl.innerHTML = "";
             
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+
             checkBtn.innerText = "檢查答案";
             checkBtn.style.display = 'block'; 
-            checkBtn.disabled = false;
-            deleteBtn.style.display = 'block'; 
             restartBtn.style.display = 'none'; 
-            menuBtn.style.display = 'block'; 
 
-            if (currentQuestionIndex >= totalQuestionsPerGame) {
+            if (currentQuestionIndex >= currentGameQuestions.length) {
                 endGame();
                 return;
             }
 
-            const answeredCount = currentQuestionIndex;
-            const correctCount = score;
-            const percentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
-            scoreDisplayEl.innerHTML = answeredCount > 0 ? `✓ ${correctCount}/${answeredCount} (${percentage}%)` : '✓ 0/0';
-            questionNumberEl.innerText = `第 ${currentQuestionIndex + 1} / ${totalQuestionsPerGame} 題`;
+            scoreDisplayEl.innerHTML = `✓ ${score}/${currentQuestionIndex}`;
+            questionNumberEl.innerText = `第 ${currentQuestionIndex + 1} / ${currentGameQuestions.length} 題`;
 
-            const q = currentGameQuestions[currentQuestionIndex];
-            promptEl.innerText = q.chinese;
-
-            const neededTokens = q.correct_tokens.reduce((longest, current) => {
-                return current.length > longest.length ? current : longest;
-            }, []);
-            
-            const tokens = [...neededTokens, ...q.distractors];
-            
-            const shuffledTokens = shuffleArray(tokens);
-
-            shuffledTokens.forEach(text => {
-                const tokenEl = document.createElement('div');
-                tokenEl.className = 'token';
-                tokenEl.innerText = text;
-                tokenEl.addEventListener('click', addToken);
-                tokenPoolEl.appendChild(tokenEl);
-            });
+            promptEl.innerText = currentGameQuestions[currentQuestionIndex].chinese;
             
             startTimer();
-            updateIframeHeight();
+            englishInputEl.focus();
         }
 
-        // 3. 檢查答案
+        function formatTextForComparison(text) {
+            // 轉小寫，去頭尾空白，將多個空白縮成一個，移除結尾句號
+            return text.toLowerCase().trim().replace(/\s+/g, ' ').replace(/\.$/, '');
+        }
+
         function checkAnswer(isTimeout = false) {
-            if (isAnswerChecked || isAnimating) return;
+            if (isAnswerChecked) return;
             isAnswerChecked = true;
-            isAnimating = true;
             stopTimer();
+            englishInputEl.disabled = true;
 
             const q = currentGameQuestions[currentQuestionIndex];
-            const studentTokens = Array.from(answerAreaEl.children).map(el => el.innerText);
-            const studentAnswer = studentTokens.join(' ');
+            const correctCatId = ruleToCategory[q.rule];
+            const correctCatName = categories.find(c => c.id === correctCatId).name;
             
-            if (!isTimeout) {
-                const isCorrect = q.correct_tokens.some(correctArr => {
-                    return studentAnswer.toLowerCase() === correctArr.join(' ').toLowerCase();
-                });
+            // 將 correct_tokens 陣列組裝成正確句子的陣列
+            const correctAnswers = q.correct_tokens.map(arr => arr.join(' '));
+            const formattedCorrectAnswers = correctAnswers.map(formatTextForComparison);
+            
+            const userInputText = englishInputEl.value;
+            const formattedUserInput = formatTextForComparison(userInputText);
 
-                const rule = q.rule;
-                gameHistory.push({
-                    questionIndex: currentQuestionIndex,
-                    chinese: q.chinese,
-                    isCorrect: isCorrect,
-                    rule: rule,
-                    userAnswer: studentAnswer,
-                    correctAnswer: q.correct_tokens[0].join(' ')
-                });
+            const isCatCorrect = selectedCategoryId === correctCatId;
+            const isTextCorrect = formattedCorrectAnswers.includes(formattedUserInput);
 
-                if (isCorrect) {
-                    audioCorrectPlay();
-                    score++;
-                    feedbackEl.innerHTML = `<div class="feedback-correct">✅ 恭喜，回答正確！</div>`;
-                    
-                    Array.from(answerAreaEl.children).forEach(tokenEl => {
-                        tokenEl.removeEventListener('click', removeTokenFromAnswerArea);
-                        tokenEl.style.cursor = 'default';
-                    });
+            gameHistory.push({
+                questionIndex: currentQuestionIndex,
+                chinese: q.chinese,
+                isCatCorrect: isCatCorrect,
+                isTextCorrect: isTextCorrect,
+                userCatId: selectedCategoryId,
+                userText: userInputText || "(未填寫)",
+                correctCatName: correctCatName,
+                correctText: correctAnswers[0] // 取第一個當作標準答案展示
+            });
 
-                } else {
-                    audioIncorrectPlay();
-                    feedbackEl.innerHTML = `<div class="feedback-incorrect">❌ 回答錯誤。正確答案：${q.correct_tokens[0].join(' ')}</div>`;
-                    
-                    Array.from(answerAreaEl.children).forEach(tokenEl => {
-                        tokenEl.addEventListener('click', removeTokenFromAnswerArea);
-                        tokenEl.style.cursor = 'pointer';
-                    });
-                }
+            if (isTimeout) {
+                audioIncorrectPlay();
+                feedbackEl.className = 'feedback-incorrect';
+                feedbackEl.innerHTML = `⏰ 時間到！<br>正確分類：<strong>${correctCatName}</strong><br>正確寫法：<strong>${correctAnswers[0]}</strong>`;
+            } else if (isCatCorrect && isTextCorrect) {
+                audioCorrectPlay();
+                score++;
+                feedbackEl.className = 'feedback-correct';
+                feedbackEl.innerHTML = `✅ 完美！分類與英文全對！`;
+            } else if (isCatCorrect && !isTextCorrect) {
+                audioIncorrectPlay();
+                feedbackEl.className = 'feedback-partial';
+                feedbackEl.innerHTML = `⚠️ 分類正確，但英文有誤！<br>正確寫法應為：<strong>${correctAnswers[0]}</strong>`;
+            } else if (!isCatCorrect && isTextCorrect) {
+                audioIncorrectPlay();
+                feedbackEl.className = 'feedback-partial';
+                feedbackEl.innerHTML = `⚠️ 英文正確，但分類錯誤！<br>正確分類應為：<strong>${correctCatName}</strong>`;
             } else {
-                 audioIncorrectPlay();
-                 feedbackEl.innerHTML = `<div class="feedback-incorrect">⏰ 時間到！答案為：${q.correct_tokens[0].join(' ')}</div>`;
-
-                const rule = q.rule;
-                gameHistory.push({
-                    questionIndex: currentQuestionIndex,
-                    chinese: q.chinese,
-                    isCorrect: false,
-                    rule: rule,
-                    userAnswer: studentAnswer || "(超時未作答)",
-                    correctAnswer: q.correct_tokens[0].join(' ')
-                });
+                audioIncorrectPlay();
+                feedbackEl.className = 'feedback-incorrect';
+                feedbackEl.innerHTML = `❌ 分類與英文皆錯誤！<br>正確分類：<strong>${correctCatName}</strong><br>正確寫法：<strong>${correctAnswers[0]}</strong>`;
             }
 
-            tokenPoolEl.innerHTML = ""; 
             checkBtn.innerText = "下一題";
-            deleteBtn.style.display = 'none'; 
-            
-            isAnimating = false;
-            updateIframeHeight();
         }
 
-        // 4. 打亂陣列
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // 5. 遊戲結束
         function endGame() {
             stopTimer(); 
-            audioEndPlay();
-
             const finalScore = score;
-            const totalQuestions = totalQuestionsPerGame;
-            const percentage = Math.round((finalScore / totalQuestions) * 100);
+            const total = currentGameQuestions.length;
+            const percentage = Math.round((finalScore / total) * 100);
 
-            let resultMessage = `<div class="feedback-correct">🎉 遊戲結束！</div>`;
-            resultMessage += `<h2>您的最終成績：${finalScore} / ${totalQuestions} (${percentage}%)</h2>`;
+            let resultMessage = `<div class="feedback-correct" style="padding:20px;">🎉 遊戲結束！<br><h2>您的最終成績：${finalScore} / ${total} (${percentage}%)</h2></div>`;
 
-            const incorrectAnswers = gameHistory.filter(h => !h.isCorrect);
-            if (incorrectAnswers.length > 0) {
-                resultMessage += `<p style="color:var(--danger-color); font-weight:bold;">您有 ${incorrectAnswers.length} 題答錯，請複習以下錯誤：</p>`;
-                errorHistoryEl.innerHTML = incorrectAnswers.map(h => `
-                    <div class="error-item">
-                        <strong>題目 ${h.questionIndex + 1} (${h.chinese})</strong>
-                        <span class="wrong-answer">您的答案：${h.userAnswer}</span>
-                        <span class="correct-answer">正確答案：${h.correctAnswer}</span>
-                        <span class="rule-explanation">相關規則：${questionRules[h.rule]}</span>
-                    </div>
-                `).join('');
+            const mistakes = gameHistory.filter(h => !h.isCatCorrect || !h.isTextCorrect);
+            if (mistakes.length > 0) {
+                errorHistoryEl.innerHTML = `<h3>錯誤複習區</h3>` + mistakes.map(h => {
+                    let catHtml = h.isCatCorrect 
+                        ? `<div class="error-detail">分類：<span class="correct-text">正確 (${h.correctCatName})</span></div>`
+                        : `<div class="error-detail">分類：<span class="wrong-text">錯誤</span> ➔ 正確為 <span class="correct-text">${h.correctCatName}</span></div>`;
+                    
+                    let textHtml = h.isTextCorrect 
+                        ? `<div class="error-detail">句子：<span class="correct-text">正確 (${h.userText})</span></div>`
+                        : `<div class="error-detail">句子：<span class="wrong-text">${h.userText}</span> ➔ 正確為 <span class="correct-text">${h.correctText}</span></div>`;
+
+                    return `<div class="error-item"><strong>題目：${h.chinese}</strong>${catHtml}${textHtml}</div>`;
+                }).join('');
                 errorHistoryEl.style.display = 'block';
-            } else {
-                resultMessage += `<p style="color:var(--secondary-dark); font-weight:bold;">恭喜您！所有題目皆回答正確！</p>`;
-                errorHistoryEl.style.display = 'none';
             }
 
+            feedbackEl.className = '';
             feedbackEl.innerHTML = resultMessage;
             
-            promptEl.innerHTML = '';
-            answerAreaEl.innerHTML = '';
-            tokenPoolEl.innerHTML = '';
+            promptEl.innerText = '完成測驗！';
+            categoryGridEl.innerHTML = '';
+            englishInputEl.style.display = 'none';
+            document.querySelectorAll('.step-label').forEach(el => el.style.display = 'none');
             
             checkBtn.style.display = 'none'; 
-            deleteBtn.style.display = 'none'; 
-            
-            menuBtn.style.display = 'block'; 
             restartBtn.style.display = 'block'; 
-            restartBtn.innerText = '再來一次';
-            
-            updateIframeHeight(); 
         }
 
-        // 6. 處理 "檢查答案" / "下一題" 按鈕
-        function handleCheckOrNext() {
-            if (checkBtn.innerText === "檢查答案") {
-                if (answerAreaEl.children.length > 0) {
+        document.addEventListener('DOMContentLoaded', () => {
+            getDOMElements();
+            checkBtn.addEventListener('click', () => {
+                if (checkBtn.innerText === "檢查答案") {
+                    if (!selectedCategoryId) {
+                        alert("請先選擇「的」的類型！");
+                        return;
+                    }
+                    if (!englishInputEl.value.trim()) {
+                        alert("請輸入英文句子！");
+                        return;
+                    }
                     checkAnswer();
                 } else {
-                    feedbackEl.innerHTML = `<div class="feedback-incorrect">請先組合答案！</div>`;
-                    updateIframeHeight();
+                    currentQuestionIndex++;
+                    loadQuestion();
                 }
-            } 
-            else if (checkBtn.innerText === "下一題") {
-                currentQuestionIndex++;
-                loadQuestion();
-            }
-        }
-        
-        // 7. 綁定事件監聽器函式
-        function bindEventListeners() {
-            checkBtn.addEventListener('click', handleCheckOrNext);
-            restartBtn.addEventListener('click', startGame);
-            deleteBtn.addEventListener('click', deleteLastToken); 
-            menuBtn.addEventListener('click', () => { 
-                window.location.href = 'eng_game123.html'; 
-            }); 
-        }
+            });
+            restartBtn.addEventListener('click', () => {
+                englishInputEl.style.display = 'block';
+                document.querySelectorAll('.step-label').forEach(el => el.style.display = 'block');
+                startGame();
+            });
+            menuBtn.addEventListener('click', () => { window.location.href = 'eng_game123.html'; }); 
 
-        // --- 遊戲啟動 ---
-        document.addEventListener('DOMContentLoaded', () => {
-             getDOMElements(); 
-             
-             initialGameContainerHtml = gameContainer.innerHTML;
-             
-             bindEventListeners();
+            // 支援按 Enter 提交
+            englishInputEl.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter' && checkBtn.innerText === "檢查答案") {
+                    checkBtn.click();
+                }
+            });
 
-             if(timerDisplayEl) timerDisplayEl.innerText = `${TIME_LIMIT_SECONDS}.0`;
-             
-             startGame();
+            startGame();
         });
-
     </script>
 </body>
-
 </html>
-
