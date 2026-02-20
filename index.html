@@ -307,13 +307,67 @@
         .btn-retry-wrong:hover { background-color: #e76f51; color: white; border-color: #e76f51; }
         .btn-restart { background-color: var(--secondary-dark); color: white; border-color: var(--secondary-dark); }
         .btn-restart:hover { background-color: var(--secondary-color); }
-
+/* --- 新增：彈窗與主選單樣式 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 1; transition: opacity 0.3s;
+        }
+        .modal-overlay.hidden { display: none; opacity: 0; pointer-events: none;}
+        .modal-content {
+            background: white; width: 90%; max-width: 500px;
+            max-height: 85vh; border-radius: 20px; padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow-y: auto; position: relative; text-align: center;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        .modal-title { font-size: 1.3rem; color: #333; font-weight: 800; margin: 0;}
+        .close-btn { font-size: 2rem; cursor: pointer; color: #999; line-height: 1; margin-top: -5px;}
+        .option-label {
+            display: flex; align-items: center; gap: 8px; font-size: 14px;
+            padding: 10px; background: #f8f9fa; border-radius: 8px; cursor: pointer;
+            border: 1px solid #ddd; transition: all 0.2s;
+        }
+        .option-label:hover { background: #e9ecef; border-color: #bbb; }
+        .option-checkbox { width: 16px; height: 16px; cursor: pointer; }
+        @media (max-width: 600px) {
+            #optionsContainer { grid-template-columns: 1fr !important; } /* 手機版變成單行 */
+        }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <div id="game-area">
+<div id="game-container">
+        
+        <div id="startOverlay" style="text-align: center; padding: 40px 20px;">
+            <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">歡迎來到<br>英文「的」文法挑戰</h2>
+            <div style="margin-bottom: 30px;">
+                <button onclick="openOptionsModal()" style="background: white; color: var(--primary-dark); padding: 10px 20px; font-size: 1rem; border-radius: 8px; border:2px solid var(--primary-dark); cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.2s;">
+                    ⚙️ 選擇「的」的種類
+                </button>
+            </div>
+            <button onclick="startGameSession()" style="background: var(--primary-color); color: white; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; border:none; cursor:pointer; box-shadow: 0 5px 15px rgba(10, 147, 150, 0.4); font-weight:bold; transition: all 0.2s;">
+                ▶ 開始挑戰 (Start)
+            </button>
+        </div>
+
+        <div class="modal-overlay hidden" id="optionsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">⚙️ 選擇題目種類</div>
+                    <div class="close-btn" onclick="closeModal('optionsModal')">&times;</div>
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
+                    <button onclick="selectAllOptions(true)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全選</button>
+                    <button onclick="selectAllOptions(false)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全不選</button>
+                </div>
+                <div id="optionsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; max-height: 50vh; overflow-y: auto;">
+                    </div>
+                <button onclick="saveOptionsAndClose()" style="margin-top: 20px; width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">確定</button>
+            </div>
+        </div>
+        <div id="game-area" style="display: none;">
             <h1>英文「的」文法挑戰</h1>
 
             <div id="game-status-bar">
@@ -431,7 +485,59 @@
             { id: 11, name: "地方 + 的" },
             { id: 12, name: "時間 + 的" }
         ];
+// --- 新增：主選單與題庫選擇邏輯 ---
+        let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全選 12 款
 
+        function openOptionsModal() {
+            document.getElementById('optionsModal').classList.remove('hidden');
+            renderOptions();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function renderOptions() {
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            categories.forEach(cat => {
+                const isChecked = selectedCategories.includes(cat.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <label class="option-label">
+                        <input type="checkbox" class="option-checkbox" value="${cat.id}" ${isChecked}>
+                        ${cat.name}
+                    </label>
+                `;
+            });
+        }
+
+        function selectAllOptions(selectAll) {
+            const checkboxes = document.querySelectorAll('.option-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+        }
+
+        function saveOptionsAndClose() {
+            const checkboxes = document.querySelectorAll('.option-checkbox');
+            selectedCategories = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) selectedCategories.push(parseInt(cb.value));
+            });
+            if (selectedCategories.length === 0) {
+                alert("請至少選擇一種「的」！");
+                return;
+            }
+            closeModal('optionsModal');
+        }
+
+        function startGameSession() {
+            if (selectedCategories.length === 0) {
+                alert("請至少選擇一種「的」！");
+                return;
+            }
+            document.getElementById('startOverlay').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+            initGame(false);
+        }
         const ruleToCategory = {
             3: 1, 1: 2, 2: 2, 7: 3, 8: 4, 13: 5, 5: 6, 6: 6, 14: 7, 10: 8, 9: 9, 4: 10, 12: 11, 11: 12
         };
@@ -692,7 +798,7 @@
         // 4. 遊戲邏輯
         // ------------------------------------------------------------------
         
-        function initGame(isRetry = false) {
+function initGame(isRetry = false) {
             currentQIndex = 0;
             score = 0;
             gameHistory = [];
@@ -701,8 +807,24 @@
             dom.gameArea.style.display = 'block';
 
             if (!isRetry) {
-                shuffledQuestions = [...questionBank].sort(() => Math.random() - 0.5).slice(0, 10);
+                // 找出所有被勾選的 Category 對應的 Rule ID
+                let allowedRules = Object.keys(ruleToCategory)
+                                         .filter(rule => selectedCategories.includes(ruleToCategory[rule]))
+                                         .map(Number);
+                
+                // 過濾題庫 (只保留被選中的規則題目)
+                let filteredQuestions = questionBank.filter(q => allowedRules.includes(q.rule));
+                
+                // 如果題庫不夠 10 題，就全拿；否則隨機抽 10 題
+                const maxQ = Math.min(10, filteredQuestions.length);
+                shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5).slice(0, maxQ);
             } 
+
+            if (shuffledQuestions.length === 0) {
+                alert("這幾類剛好沒有對應的題目，請重新選擇！");
+                goBackToMenu();
+                return;
+            }
 
             dom.qTotal.innerText = shuffledQuestions.length;
             renderCategories();
@@ -1014,18 +1136,18 @@
             }
         });
         
-        function goBackToMenu() {
-            if (window.parent && window.parent.closeGame) {
-                window.parent.closeGame();
-            } else {
-                window.location.href = 'eng_game123.html';
-            }
+function goBackToMenu() {
+            // 現在改為退回主選單，而不是離開頁面
+            stopTimer();
+            dom.gameArea.style.display = 'none';
+            dom.endScreen.style.display = 'none';
+            document.getElementById('startOverlay').style.display = 'block';
         }
-
         // 啟動遊戲
         initGame();
 
     </script>
 </body>
 </html>
+
 
