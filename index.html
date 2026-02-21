@@ -402,10 +402,10 @@
         const keyPart2 = "99843d0bae6f77f25b0bf50875a3cc23d9556e7e77d73b2a8828e9b690319381"; 
         const OPENROUTER_API_KEY = keyPart1 + keyPart2;
 
-       async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, standardAnswer) {
+async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, standardAnswer) {
             const prompt = `你是一個專業且寬容的英文老師，正在批改學生的翻譯題。
 中文題目：「${questionChinese}」
-必須使用的文法規則：「${ruleDesc}」
+主要考驗的文法規則：「${ruleDesc}」
 其中一個標準答案是：「${standardAnswer}」
 
 學生提交的答案：「${studentAnswer}」
@@ -416,11 +416,12 @@
 2. 允許美式/英式拼寫差異。
 3. 允許不影響理解的極微小拼字錯誤。
 4. 句意必須與中文題目一致 (注意情態動詞的語氣，例如可能 might/may vs 應該 should)。
-5. 最重要的一點：必須符合規定的文法規則！如果文法結構錯了，即使意思對也是錯的。
+5. 寬容對待省略句法：如果題目規則是教導「省略寫法」(例如直接加 p.p.、直接加形容詞、介詞)，但學生寫了完整的關係代名詞子句 (例如加上了 who is, which was 等完整結構)，請務必判定為正確 (isCorrect: true)！
+6. 只有在文法結構徹底錯誤時 (例如該用 of 卻用錯了 's，或是動詞形態完全用錯)，才判定為錯誤 (isCorrect: false)。
 
 請以 JSON 格式回覆，必須包含以下兩個欄位：
 "isCorrect": true 或 false
-"explanation": 如果錯了，請用繁體中文簡短解釋學生的句子錯在哪裡 (例如用字不當、文法錯誤、語氣不對)，以及為什麼標準答案才是對的。如果答對了，可以留空或給一句鼓勵說話。只輸出 JSON，不要其他廢話。`;
+"explanation": 如果錯了，請用繁體中文簡短解釋錯在哪裡。如果答對了，但學生寫了完整子句而沒有使用簡化寫法，請給予鼓勵，並溫馨補充「這句完全正確！不過其實也可以簡化成...」。只輸出 JSON，不要其他廢話。`;
 
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1132,6 +1133,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
