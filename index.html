@@ -618,15 +618,16 @@ function initGame(isRetry = false) {
             dom.gameArea.style.display = 'block';
 
             if (!isRetry) {
-                // 找出所有被勾選的 Category 對應的 Rule ID
                 let allowedRules = Object.keys(ruleToCategory)
                                          .filter(rule => selectedCategories.includes(ruleToCategory[rule]))
                                          .map(Number);
                 
-                // 過濾題庫 (只保留被選中的規則題目)
-                let filteredQuestions = questionBank.filter(q => allowedRules.includes(q.rule));
+                // 過濾題庫 (支援單一 rule 或是陣列 rules)
+                let filteredQuestions = questionBank.filter(q => {
+                    const qRules = q.rules || [q.rule];
+                    return qRules.some(r => allowedRules.includes(r));
+                });
                 
-                // 如果題庫不夠 10 題，就全拿；否則隨機抽 10 題
                 const maxQ = Math.min(10, filteredQuestions.length);
                 shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5).slice(0, maxQ);
             } 
@@ -716,41 +717,43 @@ function initGame(isRetry = false) {
             else dom.timerBar.style.backgroundColor = 'var(--primary-color)';
         }
 
-        function handleTimeout() {
+       function handleTimeout() {
             stopTimer();
             sfx.timeup();
             
-            let correctCatId = ruleToCategory[currentQ.rule];
-            let correctCatName = categories.find(c => c.id === correctCatId).name;
-            let correctAnsStr = currentQ.correct_tokens[0].join(' ');
+            const qRules = currentQ.rules || [currentQ.rule];
+            const correctCatNames = qRules.map(r => categories.find(c => c.id === ruleToCategory[r]).name).join(" 或 ");
+            const correctAnsStr = currentQ.correct_tokens[0].join(' ');
             
             if (currentPhase === 1) {
                 Array.from(dom.categoryGrid.children).forEach(btn => btn.disabled = true);
-                showFeedback(false, `⏰ 時間到！<br>正確分類: <strong>${correctCatName}</strong><br>正確句子: <strong>${correctAnsStr}</strong>`);
+                showFeedback(false, `⏰ 時間到！<br>正確分類: <strong>${correctCatNames}</strong><br>標準句子: <strong>${correctAnsStr}</strong>`);
                 recordHistory(false, "Timeout", false, "Timeout", false);
                 showNextBtn();
             } else {
                 dom.submitSentenceBtn.style.display = 'none';
                 dom.englishInput.disabled = true;
-                showFeedback(false, `⏰ 時間到！<br>正確句子: <strong>${correctAnsStr}</strong>`);
-                recordHistory(true, correctCatName, false, "Timeout", false);
+                showFeedback(false, `⏰ 時間到！<br>標準句子: <strong>${correctAnsStr}</strong>`);
+                let finalCatName = currentQ.selectedRule ? categories.find(c => c.id === ruleToCategory[currentQ.selectedRule]).name : correctCatNames;
+                recordHistory(true, finalCatName, false, "Timeout", false);
                 showNextBtn();
             }
         }
 
         // --- 階段一：判斷分類 ---
-        function handleCategoryClick(selectedId, selectedName) {
+function handleCategoryClick(selectedId, selectedName) {
             sfx.click();
             stopTimer();
             Array.from(dom.categoryGrid.children).forEach(btn => btn.disabled = true);
 
-            let correctCatId = ruleToCategory[currentQ.rule];
-            let correctCatName = categories.find(c => c.id === correctCatId).name;
-            let correctAnsStr = currentQ.correct_tokens[0].join(' ');
-            let explanation = ruleExplanations[currentQ.rule];
+            const qRules = currentQ.rules || [currentQ.rule];
+            const correctCatIds = qRules.map(r => ruleToCategory[r]);
+            const correctCatNames = correctCatIds.map(id => categories.find(c => c.id === id).name).join(" 或 ");
+            const correctAnsStr = currentQ.correct_tokens[0].join(' '); 
 
-            if (selectedId === correctCatId) {
-                // 答對了
+            if (correctCatIds.includes(selectedId)) {
+                // 答對了 (只要選中其中一個合法的就算對)
+                currentQ.selectedRule = qRules.find(r => ruleToCategory[r] === selectedId); 
                 score += 5;
                 dom.score.innerText = score;
                 sfx.correct();
@@ -763,12 +766,14 @@ function initGame(isRetry = false) {
                 currentPhase = 2;
                 startTimer(defaultPhase2Time); 
             } else {
-                // 答錯了
+                // 答錯了，把所有可能的解釋都列出來
                 sfx.wrong();
+                const explanation = qRules.map(r => `<strong>[${categories.find(c => c.id === ruleToCategory[r]).name}]</strong>: ${ruleExplanations[r]}`).join("<br>");
+                
                 let msg = `❌ 選擇錯誤！<br>
-                           正確分類是：<strong>${correctCatName}</strong><br>
-                           <div class="explanation-hint">💡 解釋：${explanation}</div><br>
-                           正確句子應為：<strong>${correctAnsStr}</strong>`;
+                           正確分類可以是：<strong>${correctCatNames}</strong><br>
+                           <div class="explanation-hint" style="text-align:left;">💡 解釋：<br>${explanation}</div><br>
+                           標準句子參考：<strong>${correctAnsStr}</strong>`;
                 showFeedback(false, msg);
                 recordHistory(false, selectedName, false, "(未進入)", false);
                 showNextBtn();
@@ -780,7 +785,7 @@ function initGame(isRetry = false) {
         }
 
         // --- 階段二：檢查輸入的句子 (整合 AI) ---
-       async function checkSentence() {
+async function checkSentence() {
             if (dom.submitSentenceBtn.disabled) return;
             
             sfx.click();
@@ -794,16 +799,17 @@ function initGame(isRetry = false) {
             
             let isMatch = formattedCorrectAnswers.includes(formattedUserInput);
             let usedAI = false;
-            let aiExplanation = ""; // 儲存 AI 解釋
+            let aiExplanation = ""; 
             
             dom.submitSentenceBtn.disabled = true;
             dom.englishInput.disabled = true;
 
-            let correctCatId = ruleToCategory[currentQ.rule];
+            // 🌟 核心：根據玩家在第一階段選擇的分類，來決定傳給 AI 的文法規則要求！
+            let appliedRule = currentQ.selectedRule || (currentQ.rules ? currentQ.rules[0] : currentQ.rule);
+            let correctCatId = ruleToCategory[appliedRule];
             let correctCatName = categories.find(c => c.id === correctCatId).name;
-            let ruleDesc = ruleExplanations[currentQ.rule];
+            let ruleDesc = ruleExplanations[appliedRule];
 
-            // 交給 AI 判斷
             if (!isMatch && formattedUserInput !== "") {
                 usedAI = true;
                 dom.submitSentenceBtn.innerText = "🤖 AI 判斷中...";
@@ -817,7 +823,6 @@ function initGame(isRetry = false) {
             if (isMatch) {
                 score += 5; 
                 dom.score.innerText = score;
-                
                 let msg = usedAI ? "🎉 完美！AI 認可了你的同義詞/寫法！" : "🎉 完美！分類與句子完全正確！";
                 let badge = usedAI ? `<span class="ai-badge">AI 判定</span>` : "";
                 
@@ -838,24 +843,27 @@ function initGame(isRetry = false) {
 
         // 紀錄錯題與歷史
       function recordHistory(isCatCorrect, userCatName, isSentenceCorrect, userSentence, usedAI, aiExplanation = "") {
-            let correctCatId = ruleToCategory[currentQ.rule];
-            let correctCatName = categories.find(c => c.id === correctCatId).name;
+            const qRules = currentQ.rules || [currentQ.rule];
+            let correctCatNames = qRules.map(r => categories.find(c => c.id === ruleToCategory[r]).name).join(" 或 ");
             let correctSentence = currentQ.correct_tokens[0].join(' ');
             let isCompletelyCorrect = isCatCorrect && isSentenceCorrect;
+            
+            // 組合所有的解釋以供結算畫面顯示
+            let explanation = qRules.map(r => `[${categories.find(c => c.id === ruleToCategory[r]).name}] ${ruleExplanations[r]}`).join("<br>");
 
             gameHistory.push({
                 originalObj: currentQ, 
                 questionText: currentQ.chinese,
                 isCorrect: isCompletelyCorrect,
                 isCatCorrect: isCatCorrect,
-                correctCatName: correctCatName,
+                correctCatName: correctCatNames, // 顯示所有可能的正確答案
                 userCatName: userCatName,
                 isSentenceCorrect: isSentenceCorrect,
                 correctSentence: correctSentence,
                 userSentence: userSentence,
                 usedAI: usedAI,
                 aiExplanation: aiExplanation,
-                explanation: ruleExplanations[currentQ.rule]
+                explanation: explanation
             });
         }
         function showFeedback(isSuccess, msg) {
@@ -959,6 +967,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
