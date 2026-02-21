@@ -146,9 +146,9 @@
         }
 
         /* 第一部分：12宮格分類按鈕 */
-        #category-grid {
+#category-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -159,8 +159,8 @@
             }
         }
 
-        .category-btn {
-            padding: 10px;
+.category-btn {
+            padding: 10px 6px;
             font-size: 14px;
             font-weight: 600;
             color: var(--text-color);
@@ -170,6 +170,10 @@
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px; /* 確保每排按鈕高度一致 */
         }
 
         .category-btn:hover {
@@ -464,19 +468,24 @@ async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, stand
         // ------------------------------------------------------------------
         // 1. 分類定義與解釋對照表 
         // ------------------------------------------------------------------
-        const categories = [
+const categories = [
             { id: 1, name: "簡單形容詞 / 數字+量詞" },
-            { id: 2, name: "有生命的 (人/動物/地方 's)" },
+            { id: 2, name: "有生命的 (人/動物/地方 's)" }, // ROW 1
+
             { id: 3, name: "有...的 (with)" },
-            { id: 4, name: "沒有...的 (without)" },
+            { id: 4, name: "沒有...的 (without)" }, // ROW 2
+
             { id: 5, name: "關於...的 (about)" },
+            { id: 10, name: "死物的死物 (the...of...)" }, // ROW 3
+
             { id: 6, name: "主動動詞 / Modal Verb" },
+            { id: 9, name: "句子 + 的" }, // ROW 4
+
             { id: 7, name: "被動動詞 (p.p.)" },
-            { id: 8, name: "複合形容詞 (afraid of...等)" },
-            { id: 9, name: "句子 + 的" },
-            { id: 10, name: "死物的死物 (the...of...)" },
+            { id: 8, name: "複合形容詞 (afraid of...等)" }, // ROW 5
+
             { id: 11, name: "地方 + 的" },
-            { id: 12, name: "時間 + 的" }
+            { id: 12, name: "時間 + 的" } // ROW 6
         ];
 
 let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全選 12 款
@@ -967,6 +976,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
