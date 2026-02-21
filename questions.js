@@ -15,13 +15,13 @@ const questionBank = [
     { rules: [2, 4], chinese: "台灣的文化", correct_tokens: [ ["Taiwan's", "culture"], ["the", "culture", "of", "Taiwan"] ] },
     { rules: [2, 4], chinese: "那隻狗的尾巴", correct_tokens: [ ["the", "dog's", "tail"], ["the", "tail", "of", "the", "dog"] ] },
     { rules: [2, 4], chinese: "香港的經濟", correct_tokens: [ ["Hong", "Kong's", "economy"], ["the", "economy", "of", "Hong", "Kong"] ] },
-    { rules: [2, 4], chinese: "貓的眼睛", correct_tokens: [ ["the", "cat's", "eyes"], ["the", "eyes", "of", "the", "cat"] ] },
-    { rules: [2, 4], chinese: "世界的和平", correct_tokens: [ ["the", "world's", "peace"], ["the", "peace", "of", "the", "world"] ] },
-    { rules: [2, 4], chinese: "公司的利潤", correct_tokens: [ ["the", "company's", "profit"], ["the", "profit", "of", "the", "company"] ] },
-    { rules: [2, 4], chinese: "城市的發展", correct_tokens: [ ["the", "city's", "development"], ["the", "development", "of", "the", "city"] ] },
+    { rules: [2, 4], chinese: "那隻貓的眼睛", correct_tokens: [ ["the", "cat's", "eyes"], ["the", "eyes", "of", "the", "cat"] ] },
+    { rules: [2, 4], chinese: "這城市的歷史", correct_tokens: [ ["this", "city's", "history"], ["the", "history", "of", "this", "city"] ] },
+    { rules: [2, 4], chinese: "這公司的利潤", correct_tokens: [ ["the", "company's", "profit"], ["the", "profit", "of", "the", "company"] ] },
+    { rules: [2, 4], chinese: "那國家的發展", correct_tokens: [ ["the", "country's", "development"], ["the", "development", "of", "the", "country"] ] },
     { rules: [2, 4], chinese: "獅子的吼聲", correct_tokens: [ ["the", "lion's", "roar"], ["the", "roar", "of", "the", "lion"] ] },
     { rules: [2, 4], chinese: "我們的學校的規定", correct_tokens: [ ["our", "school's", "rules"], ["the", "rules", "of", "our", "school"] ] },
-    { rules: [2, 4], chinese: "日本的歷史", correct_tokens: [ ["Japan's", "history"], ["the", "history", "of", "Japan"] ] },
+    { rules: [2, 4], chinese: "這辦公室的環境", correct_tokens: [ ["this office's", "environment"], ["the", "environment", "of", "this office"] ] },
 
     // Rule 3: 數字+量詞+的
     { rules: [3], chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"], ["a", "5-storey", "building"] ] },
