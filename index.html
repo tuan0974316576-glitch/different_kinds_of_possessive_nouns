@@ -393,7 +393,7 @@
 
         <div id="end-screen"></div>
     </div>
-
+</div> <script src="questions.js"></script>
     <script>
         // ------------------------------------------------------------------
         // ★ 核心 AI API 設置 (OpenRouter - Gemini 2.5 Flash)
@@ -543,181 +543,7 @@ let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全�
             13: "表示內容關於某事物，使用 about。",
             14: "表示被動動作 (如被稱為、被製造)，直接將過去分詞 (p.p.) 放在名詞後方。"
         };
-
-        // ------------------------------------------------------------------
-        // 2. 題庫資料 (140題) 
-        // ------------------------------------------------------------------
-        const questionBank = [
-            // Rule 1: 人稱 's
-            { rule: 1, chinese: "我的朋友的書", correct_tokens: [ ["my", "friend's", "book"] ] },
-            { rule: 1, chinese: "彼得的車", correct_tokens: [ ["Peter's", "car"] ] },
-            { rule: 1, chinese: "那個老師的建議", correct_tokens: [ ["the", "teacher's", "advice"] ] },
-            { rule: 1, chinese: "媽媽的禮物", correct_tokens: [ ["mom's", "gift"] ] },
-            { rule: 1, chinese: "瑪莉的房間", correct_tokens: [ ["Mary's", "room"] ] },
-            { rule: 1, chinese: "那個男孩的玩具", correct_tokens: [ ["that", "boy's", "toy"] ] },
-            { rule: 1, chinese: "我們老闆的決定", correct_tokens: [ ["our", "boss's", "decision"] ] },
-            { rule: 1, chinese: "約翰的電腦", correct_tokens: [ ["John's", "computer"] ] },
-            { rule: 1, chinese: "這女人的手袋", correct_tokens: [ ["this", "woman's", "handbag"] ] },
-            { rule: 1, chinese: "這些學生的筆", correct_tokens: [ ["these", "students'", "pens"] ] },
-
-            // Rule 2: 動物/地方 's
-            { rule: 2, chinese: "台灣的文化", correct_tokens: [ ["Taiwan's", "culture"] ] },
-            { rule: 2, chinese: "那隻狗的尾巴", correct_tokens: [ ["the", "dog's", "tail"] ] },
-            { rule: 2, chinese: "香港的經濟", correct_tokens: [ ["Hong", "Kong's", "economy"] ] },
-            { rule: 2, chinese: "貓的眼睛", correct_tokens: [ ["the", "cat's", "eyes"] ] },
-            { rule: 2, chinese: "世界的和平", correct_tokens: [ ["the", "world's", "peace"] ] },
-            { rule: 2, chinese: "公司的利潤", correct_tokens: [ ["the", "company's", "profit"] ] },
-            { rule: 2, chinese: "城市的發展", correct_tokens: [ ["the", "city's", "development"] ] },
-            { rule: 2, chinese: "獅子的吼聲", correct_tokens: [ ["the", "lion's", "roar"] ] },
-            { rule: 2, chinese: "我們的學校的規定", correct_tokens: [ ["our", "school's", "rules"] ] },
-            { rule: 2, chinese: "日本的歷史", correct_tokens: [ ["Japan's", "history"] ] },
-
-            // Rule 3: 數字+量詞+的
-            { rule: 3, chinese: "一座五層高的建築物", correct_tokens: [ ["a", "five-storey", "building"], ["a", "5-storey", "building"] ] },
-            { rule: 3, chinese: "一個十歲的男孩", correct_tokens: [ ["a", "ten-year-old", "boy"], ["a", "10-year-old", "boy"] ] },
-            { rule: 3, chinese: "一張一百元的鈔票", correct_tokens: [ ["a", "one-hundred-dollar", "bill"], ["a", "100-dollar", "bill"] ] },
-            { rule: 3, chinese: "一個兩小時的會議", correct_tokens: [ ["a", "two-hour", "meeting"], ["a", "2-hour", "meeting"] ] },
-            { rule: 3, chinese: "一段三公里的路程", correct_tokens: [ ["a", "three-kilometer", "journey"], ["a", "3-kilometer", "journey"] ] },
-            { rule: 3, chinese: "一個四星級的酒店", correct_tokens: [ ["a", "four-star", "hotel"], ["a", "4-star", "hotel"] ] },
-            { rule: 3, chinese: "一份五頁的報告", correct_tokens: [ ["a", "five-page", "report"], ["a", "5-page", "report"] ] },
-            { rule: 3, chinese: "一個六人的團隊", correct_tokens: [ ["a", "six-person", "team"], ["a", "6-person", "team"] ] },
-            { rule: 3, chinese: "一段十分鐘的休息", correct_tokens: [ ["a", "ten-minute", "break"], ["a", "10-minute", "break"] ] },
-            { rule: 3, chinese: "一個七天的假期", correct_tokens: [ ["a", "seven-day", "holiday"], ["a", "7-day", "holiday"] ] },
-
-            // Rule 4: 無生命的 of
-            { rule: 4, chinese: "這個袋子的價格", correct_tokens: [ ["the", "price", "of", "the", "bag"] ] },
-            { rule: 4, chinese: "這本書的封面", correct_tokens: [ ["the", "cover", "of", "the", "book"] ] },
-            { rule: 4, chinese: "這間房子的屋頂", correct_tokens: [ ["the", "roof", "of", "the", "house"] ] },
-            { rule: 4, chinese: "這個電腦的屏幕", correct_tokens: [ ["the", "screen", "of", "the", "computer"] ] },
-            { rule: 4, chinese: "香港的人口", correct_tokens: [ ["the", "population", "of", "Hong", "Kong"] ] },
-            { rule: 4, chinese: "這首歌的名字", correct_tokens: [ ["the", "name", "of", "this", "song"] ] },
-            { rule: 4, chinese: "這張桌子的顏色", correct_tokens: [ ["the", "color", "of", "this", "table"], ["the", "colour", "of", "this", "table"] ] },
-            { rule: 4, chinese: "成功的關鍵", correct_tokens: [ ["the", "key", "to", "success"], ["the", "key", "of", "success"] ] },
-            { rule: 4, chinese: "這個問題的原因", correct_tokens: [ ["the", "cause", "of", "the", "problem"] ] },
-            { rule: 4, chinese: "這個故事的結尾", correct_tokens: [ ["the", "end", "of", "the", "story"] ] },
-
-            // Rule 5: 主動動詞
-            { rule: 5, chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ] },
-            { rule: 5, chinese: "不喜歡我的那個老師", correct_tokens: [ ["the", "teacher", "who", "does", "not","like", "me"] ] },
-            { rule: 5, chinese: "昨天沒有來的學生", correct_tokens: [ ["students", "who", "did", "not","come", "yesterday"], ["the", "students", "who", "did", "not","come", "yesterday"] ] },
-            { rule: 5, chinese: "住在隔壁的那個女人", correct_tokens: [ ["the", "woman", "who", "lives", "next", "door"] ] },
-            { rule: 5, chinese: "很多遊客參觀的那個博物館", correct_tokens: [ ["the", "museum", "which", "many", "tourists", "visit"], ["the", "museum", "that", "many", "tourists", "visit"] ] },
-            { rule: 5, chinese: "正在睡覺的那隻貓", correct_tokens: [ ["the", "cat", "which", "is", "sleeping"], ["the", "cat", "that", "is", "sleeping"] ] },
-            { rule: 5, chinese: "正在運行的那台機器", correct_tokens: [ ["the", "machine", "which", "is", "running"], ["the", "machine", "that", "is", "running"] ] },
-            { rule: 5, chinese: "教英文的那位老師", correct_tokens: [ ["the", "teacher", "who", "teaches", "English"] ] },
-            { rule: 5, chinese: "製造噪音的那些狗", correct_tokens: [ ["the", "dogs", "which", "make", "noise"], ["the", "dogs", "that", "make", "noise"] ] },
-            { rule: 5, chinese: "喜歡音樂的那些人", correct_tokens: [ ["the", "people", "who", "like", "music"], ["people", "who", "like", "music"] ] },
-            { rule: 5, chinese: "賣水果的那家店", correct_tokens: [ ["the", "shop", "which", "sells", "fruit"], ["the", "shop", "that", "sells", "fruit"] ] },
-            { rule: 5, chinese: "開得很快的那輛車", correct_tokens: [ ["the", "car", "which", "drives", "very", "fast"], ["the", "car", "that", "drives", "very", "fast"] ] },
-
-            // Rule 6: Modal verb
-            { rule: 6, chinese: "一個唱得很好的女孩", correct_tokens: [ ["a", "girl", "who", "can", "sing", "well"] ] },
-            { rule: 6, chinese: "一個應該被懲罰的學生", correct_tokens: [ ["a", "student", "who", "should", "be", "punished"] ] },
-            { rule: 6, chinese: "一個將會成功的計劃", correct_tokens: [ ["a", "plan", "that", "will", "succeed"], ["a", "plan", "which", "will", "succeed"] ] },
-            { rule: 6, chinese: "一個可能下雨的日子", correct_tokens: [ ["a", "day", "which", "may", "rain"], ["a", "day", "that", "may", "rain"] ] },
-            { rule: 6, chinese: "一個必須努力工作的人", correct_tokens: [ ["a", "person", "who", "must", "work", "hard"] ] },
-            { rule: 6, chinese: "一個可以幫助你的人", correct_tokens: [ ["someone", "who", "can", "help", "you"], ["a", "person", "who", "can", "help", "you"] ] },
-            { rule: 6, chinese: "一個將會改變世界的想法", correct_tokens: [ ["an", "idea", "that", "will", "change", "the", "world"], ["an", "idea", "which", "will", "change", "the", "world"] ] },
-            { rule: 6, chinese: "一個應該更小心的司機", correct_tokens: [ ["a", "driver", "who", "should", "be", "more", "careful"] ] },
-            { rule: 6, chinese: "一個可能會遲到的客人", correct_tokens: [ ["a", "guest", "who", "might", "be", "late"] ] },
-            { rule: 6, chinese: "一個必須遵守規則的球員", correct_tokens: [ ["a", "player", "who", "must", "follow", "the", "rules"] ] },
-
-            // Rule 7: With
-            { rule: 7, chinese: "一個有長頭髮的女孩", correct_tokens: [ ["a", "girl", "with", "long", "hair"] ] },
-            { rule: 7, chinese: "一間有大花園的屋", correct_tokens: [ ["a", "house", "with", "a", "big", "garden"] ] },
-            { rule: 7, chinese: "一個有藍眼睛的嬰兒", correct_tokens: [ ["a", "baby", "with", "blue", "eyes"] ] },
-            { rule: 7, chinese: "一本有許多圖片的書", correct_tokens: [ ["a", "book", "with", "many", "pictures"] ] },
-            { rule: 7, chinese: "一個有豐富經驗的人", correct_tokens: [ ["a", "person", "with", "rich", "experience"] ] },
-            { rule: 7, chinese: "一張有花紋的桌子", correct_tokens: [ ["a", "table", "with", "floral", "patterns"] ] },
-            { rule: 7, chinese: "一件有紅色條紋的襯衫", correct_tokens: [ ["a", "shirt", "with", "red", "stripes"] ] },
-            { rule: 7, chinese: "一個有大鼻子的人", correct_tokens: [ ["a", "person", "with", "a", "big", "nose"] ] },
-            { rule: 7, chinese: "一部有高解像度屏幕的手機", correct_tokens: [ ["a", "phone", "with", "a", "high", "resolution", "screen"] ] },
-            { rule: 7, chinese: "一個有幽默感的朋友", correct_tokens: [ ["a", "friend", "with", "a", "sense", "of", "humor"], ["a", "friend", "with", "a", "sense", "of", "humour"] ] },
-
-            // Rule 8: Without
-            { rule: 8, chinese: "一個沒有勇氣的人", correct_tokens: [ ["a", "man", "without", "courage"], ["a", "person", "without", "courage"] ] },
-            { rule: 8, chinese: "一杯沒有糖的咖啡", correct_tokens: [ ["a", "cup", "of", "coffee", "without", "sugar"] ] },
-            { rule: 8, chinese: "一個沒有窗戶的房間", correct_tokens: [ ["a", "room", "without", "windows"] ] },
-            { rule: 8, chinese: "一個沒有名字的城市", correct_tokens: [ ["a", "city", "without", "a", "name"] ] },
-            { rule: 8, chinese: "一段沒有街燈的路", correct_tokens: [ ["a", "road", "without", "streetlights"] ] },
-            { rule: 8, chinese: "一個沒有手機的學生", correct_tokens: [ ["a", "student", "without", "a", "mobile", "phone"], ["a", "student", "without", "a", "phone"] ] },
-            { rule: 8, chinese: "一隻沒有尾巴的貓", correct_tokens: [ ["a", "cat", "without", "a", "tail"] ] },
-            { rule: 8, chinese: "一個沒有理由的決定", correct_tokens: [ ["a", "decision", "without", "a", "reason"] ] },
-            { rule: 8, chinese: "一個沒有經驗的工人", correct_tokens: [ ["a", "worker", "without", "experience"] ] },
-            { rule: 8, chinese: "一個沒有朋友的小孩", correct_tokens: [ ["a", "child", "without", "friends"] ] },
-
-            // Rule 9: 句子+的
-            { rule: 9, chinese: "每個人都喜歡的那個歌手", correct_tokens: [ ["the", "singer", "everyone", "likes"], ["the", "singer", "who", "everyone", "likes"] ] },
-            { rule: 9, chinese: "我昨天買的那本書", correct_tokens: [ ["the", "book", "I", "bought", "yesterday"], ["the", "book", "which", "I", "bought", "yesterday"] ] },
-            { rule: 9, chinese: "我們正在談論的那部電影", correct_tokens: [ ["the", "movie", "we", "are", "talking", "about"], ["the", "movie", "which", "we", "are", "talking", "about"] ] },
-            { rule: 9, chinese: "你給我的那個禮物", correct_tokens: [ ["the", "gift", "you", "gave", "me"], ["the", "gift", "which", "you", "gave", "me"] ] },
-            { rule: 9, chinese: "我想去的地方", correct_tokens: [ ["the", "place", "I", "want", "to", "go"], ["the", "place", "where", "I", "want", "to", "go"] ] },
-            { rule: 9, chinese: "他告訴我的那個故事", correct_tokens: [ ["the", "story", "he", "told", "me"], ["the", "story", "which", "he", "told", "me"] ] },
-            { rule: 9, chinese: "你做的食物", correct_tokens: [ ["the", "food", "you", "cooked"], ["the", "food", "which", "you", "cooked"] ] },
-            { rule: 9, chinese: "我認識的那個人", correct_tokens: [ ["the", "person", "I", "know"], ["the", "person", "who", "I", "know"] ] },
-            { rule: 9, chinese: "我們住的房子", correct_tokens: [ ["the", "house", "we", "live", "in"], ["the", "house", "which", "we", "live", "in"] ] },
-            { rule: 9, chinese: "你正在尋找的答案", correct_tokens: [ ["the", "answer", "you", "are", "looking", "for"], ["the", "answer", "which", "you", "are", "looking", "for"] ] },
-
-            // Rule 10: 複合形容詞+的
-            { rule: 10, chinese: "一個熱愛唱歌的女孩", correct_tokens: [ ["a", "girl", "fond", "of", "singing"], ["a", "girl", "who", "is", "fond", "of", "singing"] ] },
-            { rule: 10, chinese: "一本充滿圖片的書", correct_tokens: [ ["a", "book", "full", "of", "pictures"], ["a", "book", "which", "is", "full", "of", "pictures"] ] },
-            { rule: 10, chinese: "一個對電腦熟悉的男孩", correct_tokens: [ ["a", "boy", "familiar", "with", "computers"], ["a", "boy", "who", "is", "familiar", "with", "computers"] ] },
-            { rule: 10, chinese: "一個對健康有害的習慣", correct_tokens: [ ["a", "habit", "harmful", "to", "health"], ["a", "habit", "which", "is", "harmful", "to", "health"] ] },
-            { rule: 10, chinese: "一個對每個人都友善的人", correct_tokens: [ ["a", "person", "friendly", "to", "everyone"], ["a", "person", "who", "is", "friendly", "to", "everyone"] ] },
-            { rule: 10, chinese: "一個可以使用的房間", correct_tokens: [ ["a", "room", "available", "for", "use"], ["a", "room", "which", "is", "available", "for", "use"] ] },
-            { rule: 10, chinese: "一個對這個提議感興趣的人", correct_tokens: [ ["a", "person", "interested", "in", "the", "proposal"], ["a", "person", "who", "is", "interested", "in", "the", "proposal"] ] },
-            { rule: 10, chinese: "一個能夠做這項工作的人", correct_tokens: [ ["a", "person", "capable", "of", "doing", "the", "job"], ["a", "person", "who", "is", "capable", "of", "doing", "the", "job"] ] },
-            { rule: 10, chinese: "一個對這個項目負責的經理", correct_tokens: [ ["a", "manager", "responsible", "for", "the", "project"], ["a", "manager", "who", "is", "responsible", "for", "the", "project"] ] },
-            { rule: 10, chinese: "一個類似於我的想法", correct_tokens: [ ["an", "idea", "similar", "to", "mine"], ["an", "idea", "which", "is", "similar", "to", "mine"] ] },
-
-            // Rule 11: 時間詞
-            { rule: 11, chinese: "過去的人們", correct_tokens: [ ["people", "in", "the", "past"] ] },
-            { rule: 11, chinese: "明天的那個會議", correct_tokens: [ ["the", "meeting", "tomorrow"] ] },
-            { rule: 11, chinese: "今天的那份報紙", correct_tokens: [ ["the", "newspaper", "today"] ] },
-            { rule: 11, chinese: "昨天的派對", correct_tokens: [ ["the", "party", "yesterday"] ] },
-            { rule: 11, chinese: "將來的世界", correct_tokens: [ ["the", "world", "in", "the", "future"] ] },
-            { rule: 11, chinese: "今晚的晚餐", correct_tokens: [ ["the", "dinner", "tonight"] ] },
-            { rule: 11, chinese: "現在的學生", correct_tokens: [ ["students", "nowadays"], ["students", "now"] ] },
-            { rule: 11, chinese: "早上的課", correct_tokens: [ ["the", "class", "in", "the", "morning"] ] },
-            { rule: 11, chinese: "2020年的奧運會", correct_tokens: [ ["the", "Olympics", "in", "2020"] ] },
-            { rule: 11, chinese: "週日的野餐", correct_tokens: [ ["the", "picnic", "on", "Sunday"] ] },
-
-            // Rule 12: 地點詞
-            { rule: 12, chinese: "那裡的人", correct_tokens: [ ["the", "people", "there"], ["people", "there"] ] },
-            { rule: 12, chinese: "這裡的食物", correct_tokens: [ ["the", "food", "here"], ["food", "here"] ] },
-            { rule: 12, chinese: "海外的學生", correct_tokens: [ ["students", "overseas"] ] },
-            { rule: 12, chinese: "國外的朋友", correct_tokens: [ ["friends", "abroad"] ] },
-            { rule: 12, chinese: "樓上的那個房間", correct_tokens: [ ["the", "room", "upstairs"] ] },
-            { rule: 12, chinese: "樓下的那個鄰居", correct_tokens: [ ["the", "neighbor", "downstairs"], ["the", "neighbour", "downstairs"] ] },
-            { rule: 12, chinese: "附近的那個公園", correct_tokens: [ ["the", "park", "nearby"] ] },
-            { rule: 12, chinese: "在桌上的那本書", correct_tokens: [ ["the", "book", "on", "the", "table"], ["the", "book", "on", "the", "desk"] ] },
-            { rule: 12, chinese: "在香港的商店", correct_tokens: [ ["shops", "in", "Hong", "Kong"] ] },
-            { rule: 12, chinese: "在家裡的生活", correct_tokens: [ ["life", "at", "home"] ] },
-
-            // Rule 13: About
-            { rule: 13, chinese: "一本有關中國的書", correct_tokens: [ ["a", "book", "about", "China"] ] },
-            { rule: 13, chinese: "一個關於未來的討論", correct_tokens: [ ["a", "discussion", "about", "the", "future"] ] },
-            { rule: 13, chinese: "一個關於愛的故事", correct_tokens: [ ["a", "story", "about", "love"] ] },
-            { rule: 13, chinese: "一部關於戰爭的電影", correct_tokens: [ ["a", "movie", "about", "wars"], ["a", "movie", "about", "war"], ["a", "film", "about", "war"] ] },
-            { rule: 13, chinese: "一則關於天氣的新聞", correct_tokens: [ ["news", "about", "the", "weather"] ] },
-            { rule: 13, chinese: "一個關於健康的節目", correct_tokens: [ ["a", "program", "about", "health"], ["a", "programme", "about", "health"] ] },
-            { rule: 13, chinese: "一場關於政治的辯論", correct_tokens: [ ["a", "debate", "about", "politics"] ] },
-            { rule: 13, chinese: "一篇關於歷史的文章", correct_tokens: [ ["an", "article", "about", "history"] ] },
-            { rule: 13, chinese: "一個關於科學的問題", correct_tokens: [ ["a", "question", "about", "science"] ] },
-            { rule: 13, chinese: "一個關於安全的擔憂", correct_tokens: [ ["a", "worry", "about", "safety"], ["a", "concern", "about", "safety"] ] },
-
-            // Rule 14: 被動動詞 (PP)
-            { rule: 14, chinese: "一個被稱為宙斯的男人", correct_tokens: [ ["a", "man", "called", "Zeus"] ] },
-            { rule: 14, chinese: "一份未被老闆批准的提議", correct_tokens: [ ["a", "proposal", "not", "approved", "by", "the", "boss"] ] },
-            { rule: 14, chinese: "一本用英語寫的書", correct_tokens: [ ["a", "book", "written", "in", "English"] ] },
-            { rule: 14, chinese: "一個被邀請參加派對的客人", correct_tokens: [ ["a", "guest", "invited", "to", "the", "party"] ] },
-            { rule: 14, chinese: "一輛日本製造的車", correct_tokens: [ ["a", "car", "made", "in", "Japan"] ] },
-            { rule: 14, chinese: "一個被警察抓住的小偷", correct_tokens: [ ["a", "thief", "caught", "by", "the", "police"] ] },
-            { rule: 14, chinese: "一封寄給瑪莉的信", correct_tokens: [ ["a", "letter", "sent", "to", "Mary"] ] },
-            { rule: 14, chinese: "一個被很多人愛戴的領袖", correct_tokens: [ ["a", "leader", "loved", "by", "many", "people"] ] },
-            { rule: 14, chinese: "一間被火燒毀的房子", correct_tokens: [ ["a", "house", "destroyed", "by", "fire"] ] },
-            { rule: 14, chinese: "一個未解決的問題", correct_tokens: [ ["a", "problem", "not", "solved"], ["an", "unsolved", "problem"] ] }
-        ];
+    
 
         // ------------------------------------------------------------------
         // 3. 遊戲狀態與 DOM
@@ -1133,6 +959,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
