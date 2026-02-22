@@ -97,7 +97,7 @@ const grammarNotesHTML = `
 
         <p style="margin: 0 0 5px 0; font-size: 14px; color: #d35400;"><b>⚠️ 變化寫法 2：加副詞 (如 still / even)</b></p>
         <ul style="margin: 0; padding-left: 20px; font-size: 15px;">
-            <li>一個仍然沒有被回應的問題：A question <b>still</b> not responded tp<span style="font-size: 13px; color: #777;">[still 加在 not 前方(時間類/頻率類)]</span></li>
+            <li>一個仍然沒有被回應的問題：A question <b>still</b> not responded to<span style="font-size: 13px; color: #777;">[still 加在 not 前方(時間類/頻率類)]</span></li>
             <li>一個甚至沒有在第一輪被挑選的球員：A player not <b>even</b> picked in the first round <span style="font-size: 13px; color: #777;">[even 加在 not 後方(程度類)]</span></li>
         </ul>
     </div>
