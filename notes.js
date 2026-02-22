@@ -18,9 +18,10 @@ const grammarNotesHTML = `
 
     <div style="background: var(--light-bg-1); margin-bottom: 15px; padding: 15px; border-radius: 8px; border-left: 5px solid var(--primary-color);">
         <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 18px;">2. 數字 + 量詞 + 的</h3>
-        <p style="margin: 0 0 8px 0; font-size: 15px; color: #444;">數字和量詞之間要加「-」，量詞<b>不可以加 s</b>。<br>但在現代英文，如果量詞縮寫了，連「-」也可以不用。</p>
+        <p style="margin: 0 0 8px 0; font-size: 15px; color: #444;">數字和量詞之間要加「-」，量詞<b>要用單數, 即不可加s / 寫成眾數的形式</b>。<br>但在現代英文，如果量詞縮寫了，連「-」也可以不用。</p>
         <ul style="margin: 0; padding-left: 20px; font-size: 15px; color: #333;">
             <li>一個5歲的小朋友：A five years old child ❌ / A five-year-old child ✔️</li>
+            <li>一個3人的樂隊：A three people band ❌ / A three-person band ✔️</li>
             <li>一條4公里長的橋：
                 <br>A 4-kilometre-long bridge ✔️
                 <br>A 4-km-long bridge ✔️
