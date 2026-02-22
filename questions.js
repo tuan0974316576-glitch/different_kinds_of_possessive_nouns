@@ -1335,15 +1335,15 @@ const questionBank = [
     { rules: [14, 5], chinese: "這些仍然未被種植的花", correct_tokens: [ ["these", "flowers", "still", "not", "planted"] ] },
     { rules: [14, 5], chinese: "那張甚至未被使用的門票", correct_tokens: [ ["that", "ticket", "not", "even", "used"] ] },
     { rules: [14, 5], chinese: "這些仍然未被完成的工作", correct_tokens: [ ["these", "tasks", "still", "not", "finished"], ["these", "tasks", "still", "not", "completed"] ] },
-    { rules: [14, 5], chinese: "那部甚至不被喜歡的電影", correct_tokens: [ ["that", "movie", "not", "even", "liked"] ] }
-    { rules: [14, 5], chinese: "一個被稱為Tom的男孩", correct_tokens: [ ["a", "boy", "called", "Tom"], ["a", "boy", "who", "is", "called", "Tom"] ] },
-    { rules: [14, 5], chinese: "一份未被老闆批准的提議", correct_tokens: [ ["a", "proposal", "not", "approved", "by", "the", "boss"], ["a", "proposal", "which", "is", "not", "approved", "by", "the", "boss"] ] },
-    { rules: [14, 5], chinese: "一本用英語寫的書", correct_tokens: [ ["a", "book", "written", "in", "English"], ["a", "book", "which", "is", "written", "in", "English"], ["a", "book", "which", "was", "written", "in", "English"] ] },
-    { rules: [14, 5], chinese: "一個被邀請參加派對的客人", correct_tokens: [ ["a", "guest", "invited", "to", "the", "party"], ["a", "guest", "who", "is", "invited", "to", "the", "party"] ] },
-    { rules: [14, 5], chinese: "一輛日本製造的車", correct_tokens: [ ["a", "car", "made", "in", "Japan"], ["a", "car", "which", "is", "made", "in", "Japan"] ] },
-    { rules: [14, 5], chinese: "一個被警察抓住的小偷", correct_tokens: [ ["a", "thief", "caught", "by", "the", "police"], ["a", "thief", "who", "is", "caught", "by", "the", "police"], ["a", "thief", "who", "was", "caught", "by", "the", "police"] ] },
-    { rules: [14, 5], chinese: "一封寄給瑪莉的信", correct_tokens: [ ["a", "letter", "sent", "to", "Mary"], ["a", "letter", "which", "is", "sent", "to", "Mary"] ] },
-    { rules: [14, 9, 5], chinese: "一個被很多人愛戴的領袖", correct_tokens: [ ["a", "leader", "loved", "by", "many", "people"], ["a", "leader", "many", "people", "love"], ["a", "leader", "who", "many", "people", "love"] ] }, // 支援三種寫法
-    { rules: [14, 5], chinese: "一間被火燒毀的房子", correct_tokens: [ ["a", "house", "destroyed", "by", "fire"], ["a", "house", "which", "was", "destroyed", "by", "fire"] ] },
-    { rules: [14, 5], chinese: "一個未解決的問題", correct_tokens: [ ["a", "problem", "not", "solved"], ["an", "unsolved", "problem"], ["a", "problem", "which", "is", "not", "solved"] ] }
+    { rules: [14, 5], chinese: "那部不被喜歡的電影", correct_tokens: [ ["that", "movie", "not", "liked"], ["the", "movie", "not", "liked"] ] },
+    { rules: [14, 5], chinese: "那名被稱為Tom的男孩", correct_tokens: [ ["the", "boy", "called", "Tom"], ["the", "boy", "who", "is", "called", "Tom"] ] },
+    { rules: [14, 5], chinese: "這份未被老闆批准的提議", correct_tokens: [ ["this", "proposal", "not", "approved", "by", "the", "boss"], ["this", "proposal", "which", "is", "not", "approved", "by", "the", "boss"] ] },
+    { rules: [14, 5], chinese: "這本用英語寫的書", correct_tokens: [ ["this", "book", "written", "in", "English"], ["this", "book", "which", "is", "written", "in", "English"] ] },
+    { rules: [14, 5], chinese: "那些被邀請參加派對的客人", correct_tokens: [ ["those", "guests", "invited", "to", "the", "party"], ["the", "guests", "who", "were", "invited", "to", "the", "party"] ] },
+    { rules: [14, 5], chinese: "這輛日本製造的車", correct_tokens: [ ["this", "car", "made", "in", "Japan"], ["this", "car", "which", "is", "made", "in", "Japan"] ] },
+    { rules: [14, 5], chinese: "那個被警察抓住的小偷", correct_tokens: [ ["that", "thief", "caught", "by", "the", "police"], ["the", "thief", "who", "was", "caught", "by", "the", "police"] ] },
+    { rules: [14, 5], chinese: "這封寄給瑪莉的信", correct_tokens: [ ["this", "letter", "sent", "to", "Mary"], ["the", "letter", "which", "is", "sent", "to", "Mary"] ] },
+    { rules: [14, 9, 5], chinese: "那名被很多人愛戴的領袖", correct_tokens: [ ["the", "leader", "loved", "by", "many", "people"], ["the", "leader", "many", "people", "love"] ] },
+    { rules: [14, 5], chinese: "這間被火燒毀的房子", correct_tokens: [ ["this", "house", "destroyed", "by", "fire"], ["the", "house", "which", "was", "destroyed", "by", "fire"] ] },
+    { rules: [14, 5], chinese: "這個未解決的問題", correct_tokens: [ ["this", "problem", "not", "solved"], ["an", "unsolved", "problem"] ] }
 ];
