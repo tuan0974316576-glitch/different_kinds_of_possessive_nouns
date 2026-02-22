@@ -647,11 +647,10 @@ let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全�
             timeup: () => playTone(150, 'sawtooth', 0.5)
         };
 
+    // ------------------------------------------------------------------
+        // ★ 遊戲邏輯 (升級版出題機制)
         // ------------------------------------------------------------------
-        // 4. 遊戲邏輯
-        // ------------------------------------------------------------------
-        
-function initGame(isRetry = false) {
+        function initGame(isRetry = false) {
             currentQIndex = 0;
             score = 0;
             gameHistory = [];
@@ -664,14 +663,49 @@ function initGame(isRetry = false) {
                                          .filter(rule => selectedCategories.includes(ruleToCategory[rule]))
                                          .map(Number);
                 
-                // 過濾題庫 (支援單一 rule 或是陣列 rules)
-                let filteredQuestions = questionBank.filter(q => {
+                // 1. 過濾題庫並按規則分類
+                let pools = {};
+                questionBank.forEach(q => {
                     const qRules = q.rules || [q.rule];
-                    return qRules.some(r => allowedRules.includes(r));
+                    // 找出這題符合的規則中，第一個允許的規則作為主要分類
+                    const matchedRule = qRules.find(r => allowedRules.includes(r));
+                    if (matchedRule) {
+                        if (!pools[matchedRule]) pools[matchedRule] = [];
+                        pools[matchedRule].push(q);
+                    }
                 });
+
+                // 2. 打亂每個分類裡的題目
+                for (let rule in pools) {
+                    pools[rule].sort(() => Math.random() - 0.5);
+                }
+
+                // 3. 輪流從每個分類抽一題，確保題型多樣化，直到抽滿 10 題
+                let selected = [];
+                let poolKeys = Object.keys(pools);
                 
-                const maxQ = Math.min(10, filteredQuestions.length);
-                shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5).slice(0, maxQ);
+                // 計算過濾後總共有多少題
+                let totalAvailable = Object.values(pools).reduce((sum, arr) => sum + arr.length, 0);
+                const maxQ = Math.min(10, totalAvailable);
+
+                while (selected.length < maxQ && poolKeys.length > 0) {
+                    // 隨機打亂池子的順序，這樣每次遊戲優先抽到的題型也會不同
+                    poolKeys.sort(() => Math.random() - 0.5);
+                    
+                    for (let i = poolKeys.length - 1; i >= 0; i--) {
+                        if (selected.length >= maxQ) break;
+                        
+                        let key = poolKeys[i];
+                        if (pools[key].length > 0) {
+                            selected.push(pools[key].pop());
+                        } else {
+                            poolKeys.splice(i, 1); // 這個分類的題目抽完了，將它移除
+                        }
+                    }
+                }
+                
+                // 4. 最後將抽出來的這 10 題徹底打亂順序出題
+                shuffledQuestions = selected.sort(() => Math.random() - 0.5);
             } 
 
             if (shuffledQuestions.length === 0) {
@@ -1009,6 +1043,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
