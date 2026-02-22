@@ -3,6 +3,68 @@ const questionBank = [
     // Rule 1: 人稱 's (共 50 題：原 10 題 + 新增 40 題)
     // 嚴格對應：一個(a/an)、這(this/these)、那(the/that/those)、一些(some)、我的/他的(my/his)
     // ==========================================
+    // ==========================================
+    // Rule 1: 簡單形容詞 - 生活化版 (50題)
+    // 包含單一、多個、and/but 連接及連字號形容詞
+    // ==========================================
+
+    // [第一組：單一形容詞 (15題)]
+    { rules: [1], chinese: "一個繁忙的車站", correct_tokens: [ ["a", "busy", "station"] ] },
+    { rules: [1], chinese: "一些甜的蛋糕", correct_tokens: [ ["some", "sweet", "cakes"] ] },
+    { rules: [1], chinese: "她的舊電腦", correct_tokens: [ ["her", "old", "computer"] ] },
+    { rules: [1], chinese: "那份美味的午餐", correct_tokens: [ ["the", "delicious", "lunch"] ] },
+    { rules: [1], chinese: "一個安靜的公園", correct_tokens: [ ["a", "quiet", "park"] ] },
+    { rules: [1], chinese: "一些昂貴的珠寶", correct_tokens: [ ["some", "expensive", "jewelry"], ["some", "expensive", "jewellery"] ] },
+    { rules: [1], chinese: "一名友善的老師", correct_tokens: [ ["a", "friendly", "teacher"] ] },
+    { rules: [1], chinese: "這條窄的街道", correct_tokens: [ ["this", "narrow", "street"] ] },
+    { rules: [1], chinese: "他的髒鞋子", correct_tokens: [ ["his", "dirty", "shoes"] ] },
+    { rules: [1], chinese: "一個有趣的課程", correct_tokens: [ ["an", "interesting", "lesson"], ["an", "interesting", "class"] ] },
+    { rules: [1], chinese: "那棵高的樹", correct_tokens: [ ["the", "tall", "tree"] ] },
+    { rules: [1], chinese: "一些新鮮的水果", correct_tokens: [ ["some", "fresh", "fruit"] ] },
+    { rules: [1], chinese: "一個巨大的建築物", correct_tokens: [ ["an", "enormous", "building"], ["a", "huge", "building"] ] },
+    { rules: [1], chinese: "他的聰明的弟弟", correct_tokens: [ ["his", "smart", "brother"], ["his", "clever", "brother"] ] },
+    { rules: [1], chinese: "一個寒冷的夜晚", correct_tokens: [ ["a", "cold", "night"] ] },
+
+    // [第二組：多個形容詞並列 (15題)]
+    { rules: [1], chinese: "一輛漂亮的新車", correct_tokens: [ ["a", "beautiful", "new", "car"] ] },
+    { rules: [1], chinese: "一些大而紅的蘋果", correct_tokens: [ ["some", "big", "red", "apples"] ] },
+    { rules: [1], chinese: "一個安靜的小鎮", correct_tokens: [ ["a", "quiet", "small", "town"] ] },
+    { rules: [1], chinese: "他的舊的藍色襯衫", correct_tokens: [ ["his", "old", "blue", "shirt"] ] },
+    { rules: [1], chinese: "那杯熱的濃咖啡", correct_tokens: [ ["the", "hot", "strong", "coffee"] ] },
+    { rules: [1], chinese: "一個聰明的年輕醫生", correct_tokens: [ ["a", "smart", "young", "doctor"] ] },
+    { rules: [1], chinese: "一些長而黑的頭髮", correct_tokens: [ ["some", "long", "black", "hair"] ] },
+    { rules: [1], chinese: "那張大的木桌子", correct_tokens: [ ["the", "large", "wooden", "table"], ["the", "big", "wooden", "table"] ] },
+    { rules: [1], chinese: "一個乾淨舒適的房間", correct_tokens: [ ["a", "clean", "comfortable", "room"] ] },
+    { rules: [1], chinese: "這雙便宜的小鞋子", correct_tokens: [ ["these", "cheap", "small", "shoes"] ] },
+    { rules: [1], chinese: "一些美味的熱湯", correct_tokens: [ ["some", "delicious", "hot", "soup"] ] },
+    { rules: [1], chinese: "一個勤奮的老員工", correct_tokens: [ ["a", "hard-working", "old", "employee"] ] },
+    { rules: [1], chinese: "那隻可愛的小白兔", correct_tokens: [ ["the", "cute", "little", "white", "rabbit"] ] },
+    { rules: [1], chinese: "一個昂貴的大房子", correct_tokens: [ ["an", "expensive", "large", "house"] ] },
+    { rules: [1], chinese: "這些有趣的舊故事", correct_tokens: [ ["these", "interesting", "old", "stories"] ] },
+
+    // [第三組：使用 and / but 連接形容詞 (10題)]
+    { rules: [1], chinese: "一個好而且無壓力的環境", correct_tokens: [ ["a", "nice", "and", "stress-free", "environment"] ] },
+    { rules: [1], chinese: "很多昂貴但沒有用的產品", correct_tokens: [ ["many", "expensive", "but", "useless", "products"] ] },
+    { rules: [1], chinese: "一個小但溫馨的家", correct_tokens: [ ["a", "small", "but", "warm", "home"], ["a", "small", "but", "cozy", "home"] ] },
+    { rules: [1], chinese: "一些便宜但高品質的衣服", correct_tokens: [ ["some", "cheap", "but", "high-quality", "clothes"] ] },
+    { rules: [1], chinese: "一個繁忙但快樂的下午", correct_tokens: [ ["a", "busy", "but", "happy", "afternoon"] ] },
+    { rules: [1], chinese: "這位友善且有耐心的老師", correct_tokens: [ ["the", "friendly", "and", "patient", "teacher"] ] },
+    { rules: [1], chinese: "一項困難但有趣的挑戰", correct_tokens: [ ["a", "difficult", "but", "interesting", "challenge"] ] },
+    { rules: [1], chinese: "那個舊但乾淨的廚房", correct_tokens: [ ["the", "old", "but", "clean", "kitchen"] ] },
+    { rules: [1], chinese: "一個現代且高科技的辦公室", correct_tokens: [ ["a", "modern", "and", "high-tech", "office"] ] },
+    { rules: [1], chinese: "一些簡單但有效的規則", correct_tokens: [ ["some", "simple", "but", "effective", "rules"] ] },
+
+    // [第四組：連字號形容詞 (hyphenated) (10題)]
+    { rules: [1], chinese: "一間全新的辦公室", correct_tokens: [ ["a", "brand-new", "office"] ] },
+    { rules: [1], chinese: "一個高質素的袋子", correct_tokens: [ ["a", "high-quality", "bag"] ] },
+    { rules: [1], chinese: "一位有名的歌手", correct_tokens: [ ["a", "well-known", "singer"], ["a", "famous", "singer"] ] },
+    { rules: [1], chinese: "一項長期的計劃", correct_tokens: [ ["a", "long-term", "plan"] ] },
+    { rules: [1], chinese: "一個全職的工作", correct_tokens: [ ["a", "full-time", "job"] ] },
+    { rules: [1], chinese: "一條無煙的街道", correct_tokens: [ ["a", "smoke-free", "street"] ] },
+    { rules: [1], chinese: "一個兼職的員工", correct_tokens: [ ["a", "part-time", "employee"] ] },
+    { rules: [1], chinese: "一場高難度的考試", correct_tokens: [ ["a", "high-difficulty", "exam"] ] },
+    { rules: [1], chinese: "一個環保的選擇", correct_tokens: [ ["an", "eco-friendly", "choice"] ] },
+    { rules: [1], chinese: "一個頭等的座位", correct_tokens: [ ["a", "first-class", "seat"] ] },
     { rules: [1], chinese: "我的朋友的書", correct_tokens: [ ["my", "friend's", "book"] ] },
     { rules: [1], chinese: "彼得的車", correct_tokens: [ ["Peter's", "car"] ] },
     { rules: [1], chinese: "那個老師的建議", correct_tokens: [ ["the", "teacher's", "advice"], ["that", "teacher's", "advice"] ] },
