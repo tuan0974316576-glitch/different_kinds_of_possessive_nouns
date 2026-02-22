@@ -344,26 +344,41 @@
 
 <div id="game-container">
         
-        <div id="startOverlay" style="text-align: center; padding: 20px 10px;">
-            <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 26px;">歡迎來到<br>英文「的」文法挑戰</h2>
+    <div id="startOverlay" style="text-align: center; padding: 20px 10px;">
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 26px;">歡迎來到<br>英文「的」文法挑戰</h2>
+        
+        <div style="background: var(--light-bg-1); padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+            <div style="font-weight: bold; margin-bottom: 10px; color: var(--primary-dark); text-align: center; font-size: 18px;">⚙️ 選擇你要挑戰的「的」</div>
             
-            <div style="background: var(--light-bg-1); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-                <div style="font-weight: bold; margin-bottom: 10px; color: var(--primary-dark); text-align: center; font-size: 18px;">⚙️ 選擇你要挑戰的「的」</div>
-                
-                <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
-                    <button onclick="selectAllOptions(true)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全選</button>
-                    <button onclick="selectAllOptions(false)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全不選</button>
-                </div>
-                
-                <div id="optionsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 40vh; overflow-y: auto;">
-                    </div>
+            <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
+                <button onclick="selectAllOptions(true)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全選</button>
+                <button onclick="selectAllOptions(false)" style="padding: 6px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor:pointer;">全不選</button>
             </div>
+            
+            <div id="optionsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 40vh; overflow-y: auto;">
+                </div>
+        </div>
 
-            <button onclick="startGameSession()" style="background: var(--primary-color); color: white; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; border:none; cursor:pointer; box-shadow: 0 5px 15px rgba(10, 147, 150, 0.4); font-weight:bold; transition: all 0.2s;">
-                ▶ 開始挑戰 (Start)
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="showNotes()" style="background: white; color: var(--primary-color); padding: 12px 30px; font-size: 1.1rem; border-radius: 50px; border: 2px solid var(--primary-color); cursor: pointer; font-weight: bold; transition: all 0.2s;">
+                📖 溫習筆記
+            </button>
+            <button onclick="startGameSession()" style="background: var(--primary-color); color: white; padding: 12px 40px; font-size: 1.2rem; border-radius: 50px; border:none; cursor:pointer; box-shadow: 0 5px 15px rgba(10, 147, 150, 0.4); font-weight:bold; transition: all 0.2s;">
+                ▶ 開始挑戰
             </button>
         </div>
-        <div id="game-area" style="display: none;">
+    </div>
+
+    <div id="notesOverlay" style="display: none; padding: 20px 10px; text-align: left; height: 100%; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">
+            <h2 style="color: var(--primary-dark); margin: 0; font-size: 22px;">📖 文法溫習筆記</h2>
+            <button onclick="hideNotes()" style="background: var(--danger-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">返回</button>
+        </div>
+        <div id="notes-content" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;">
+            </div>
+    </div>
+
+    <div id="game-area" style="display: none;">
             <h1>英文「的」文法挑戰</h1>
 
             <div id="game-status-bar">
@@ -395,9 +410,10 @@
             </div>
         </div>
 
-        <div id="end-screen"></div>
-    </div>
-</div> <script src="questions.js"></script>
+<div id="end-screen"></div>
+    </div> <script src="questions.js"></script>
+    <script src="notes.js"></script>
+    
     <script>
         // ------------------------------------------------------------------
         // ★ 核心 AI API 設置 (OpenRouter - Gemini 2.5 Flash)
@@ -488,6 +504,23 @@ const categories = [
             { id: 12, name: "時間 + 的" } // ROW 6
         ];
 
+function showNotes() {
+            document.getElementById('startOverlay').style.display = 'none';
+            document.getElementById('notesOverlay').style.display = 'flex';
+            
+            const notesContent = document.getElementById('notes-content');
+            
+            // 讀取 notes.js 裡面設定好的排版內容 (grammarNotesHTML)
+            if (notesContent.innerHTML.trim() === '') {
+                notesContent.innerHTML = grammarNotesHTML;
+            }
+        }
+
+        function hideNotes() {
+            document.getElementById('notesOverlay').style.display = 'none';
+            document.getElementById('startOverlay').style.display = 'block';
+        }
+        
 let selectedCategories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 預設全選 12 款
 
         function renderOptions() {
@@ -976,6 +1009,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
