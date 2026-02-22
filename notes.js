@@ -132,7 +132,7 @@ const grammarNotesHTML = `
             <li>這電腦的顏色：the colour of this computer</li>
             <li>世界的人口：The population of the world</li>
         </ul>
-        <p style="margin: 8px 0 0 0; font-size: 14px; color: #d35400;">⚠️ 現代英文中，機構/國家/城市也可以用 's (如：Tokyo's metro / Google's products)</p>
+        <p style="margin: 8px 0 0 0; font-size: 14px; color: #d35400;">⚠️ 現代英文中，機構/國家/城市如果不當作地方時，也可以用 's (如：Tokyo's metro / Google's products)</p>
     </div>
 
     <div style="background: var(--light-bg-2); margin-bottom: 10px; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary-color);">
