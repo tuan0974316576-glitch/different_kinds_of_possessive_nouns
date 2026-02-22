@@ -68,6 +68,7 @@ const grammarNotesHTML = `
         <h4 style="margin: 0 0 5px 0; color: var(--secondary-dark); font-size: 16px;">3. 關於...的 = about</h4>
         <ul style="margin: 0; padding-left: 20px; font-size: 15px;">
             <li>一本關於中國的書：A book about China</li>
+            <li>一本不是關於中國的書：A book not about China</li>
         </ul>
     </div>
 
