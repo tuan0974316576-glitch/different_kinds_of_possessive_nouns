@@ -424,7 +424,7 @@ const questionBank = [
     { rules: [4], chinese: "一頓飯的費用", correct_tokens: [ ["the", "cost", "of", "a", "meal"] ] },
     { rules: [4], chinese: "這些改變的影響", correct_tokens: [ ["the", "impact", "of", "these", "changes"], ["the", "effect", "of", "these", "changes"] ] },
     { rules: [4], chinese: "這個故事的情節", correct_tokens: [ ["the", "plot", "of", "this", "story"] ] },
-    { rules: [4], chinese: "那些字的意思", correct_tokens: [ ["the", "meaning", "of", "those", "words"], ["the", "meanings", "of", "those", "words"] ] }
+    { rules: [4], chinese: "那些字的意思", correct_tokens: [ ["the", "meaning", "of", "those", "words"], ["the", "meanings", "of", "those", "words"] ] },
 
     // Rule 5: 主動動詞 (加入 Rule 9 省略寫法的相容)
     { rules: [5], chinese: "經常哭的那個男孩", correct_tokens: [ ["the", "boy", "who", "often", "cries"] ] },
