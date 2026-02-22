@@ -137,7 +137,7 @@ const grammarNotesHTML = `
 
     <div style="background: var(--light-bg-2); margin-bottom: 10px; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary-color);">
         <h4 style="margin: 0 0 5px 0; color: var(--secondary-dark); font-size: 16px;">9. 地方 + 的 = 名詞 + 地方介詞 + 地方</h4>
-        <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">(here / there / overseas / abroad 不用加介詞。科技/島嶼用 on，功能性建築用 at)</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">(here / there / overseas / abroad 不用加介詞。一般來說，科技/島嶼用 on，功能性建築用 at，其他用in)</p>
         <ul style="margin: 0; padding-left: 20px; font-size: 15px;">
             <li>這裡的建築：the buildings here</li>
             <li>Instagram 的照片：photos on Instagram</li>
