@@ -104,8 +104,8 @@ const grammarNotesHTML = `
     </div>
 
 <div style="background: var(--light-bg-2); margin-bottom: 10px; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary-color);">
-    <h4 style="margin: 0 0 5px 0; color: var(--secondary-dark); font-size: 16px;">6. 形容詞片語+的 (形容詞 + 介詞) = 直接寫在名詞後方</h4>
-    <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">[當形容詞帶著一個介詞尾巴時，整個片語必須放在名詞後面]</p>
+    <h4 style="margin: 0 0 5px 0; color: var(--secondary-dark); font-size: 16px;">6. 複合形容詞+的 (形容詞 + 介詞) = 直接寫在名詞後方</h4>
+    <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">[當形容詞帶著一個介詞尾巴時，形成"複合形容詞"。整個複合形容詞必須放在名詞後面]</p>
     <ul style="margin: 0 0 10px 0; padding-left: 20px; font-size: 15px;">
         <li>害怕鬼的小朋友：Children afraid of ghosts</li>
         <li>對歷史感興趣的學生：Students interested in history</li>
