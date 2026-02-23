@@ -273,7 +273,6 @@ const questionBank = [
     { rules: [3], chinese: "她那三條五公里長的路徑", correct_tokens: [ ["her", "three", "5-kilometer-long", "trails"], ["her", "3", "5-km-long", "trails"], ["her", "3", "5", "km", "long", "trails"] ] },
     { rules: [3], chinese: "這些五十頁的手冊", correct_tokens: [ ["these", "fifty-page", "manuals"], ["these", "50-page", "manuals"] ] },
     { rules: [3], chinese: "那幾座兩百米高的山", correct_tokens: [ ["those", "few", "200-meter-high", "mountains"], ["the", "few", "200-m-high", "mountains"], ["those", "few", "200", "m", "high", "mountains"] ] },
-    { rules: [3], chinese: "他的四個兩星級的酒店", correct_tokens: [ ["his", "four", "2-star", "hotels"], ["his", "4", "2-star", "hotels"] ] },
     { rules: [3], chinese: "這五篇五百字的文章", correct_tokens: [ ["these", "five", "500-word", "articles"], ["these", "5", "500-word", "articles"] ] },
     { rules: [3], chinese: "那六個兩小時的會議", correct_tokens: [ ["those", "six", "2-hour", "meetings"], ["the", "6", "2-hour", "meetings"] ] },
     { rules: [3], chinese: "一些十公斤重的包裹", correct_tokens: [ ["some", "10-kilogram", "parcels"], ["some", "10-kg", "parcels"], ["some", "10", "kg", "parcels"] ] },
