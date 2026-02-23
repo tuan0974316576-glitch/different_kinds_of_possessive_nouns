@@ -110,7 +110,6 @@ const questionBank = [
     { rules: [1], chinese: "那位經理的辦公室", correct_tokens: [ ["the", "manager's", "office"], ["that", "manager's", "office"] ] },
     { rules: [1], chinese: "那些經理的會議", correct_tokens: [ ["the", "managers'", "meeting"], ["those", "managers'", "meeting"], ["the", "managers'", "meetings"] ] },
     { rules: [1], chinese: "那位總裁的命令", correct_tokens: [ ["the", "president's", "order"], ["that", "president's", "order"], ["the", "president's", "orders"] ] },
-    { rules: [1], chinese: "一名農夫的拖拉機", correct_tokens: [ ["a", "farmer's", "tractor"] ] },
     { rules: [1], chinese: "那些農夫的土地", correct_tokens: [ ["the", "farmers'", "land"], ["those", "farmers'", "land"] ] },
     { rules: [1], chinese: "我的朋友的秘密", correct_tokens: [ ["my", "friend's", "secret"], ["my", "friend's", "secrets"] ] },
     { rules: [1], chinese: "我朋友們的計劃", correct_tokens: [ ["my", "friends'", "plans"], ["my", "friends'", "plan"] ] },
@@ -139,7 +138,7 @@ const questionBank = [
     { rules: [2, 4], chinese: "那些鳥的巢", correct_tokens: [ ["the", "birds'", "nests"], ["the", "nests", "of", "the", "birds"], ["those", "birds'", "nests"], ["the", "nests", "of", "those", "birds"] ] },
     { rules: [2, 4], chinese: "一隻大象的鼻子", correct_tokens: [ ["an", "elephant's", "trunk"], ["the", "trunk", "of", "an", "elephant"] ] },
     { rules: [2, 4], chinese: "那隻老虎的牙齒", correct_tokens: [ ["the", "tiger's", "teeth"], ["the", "teeth", "of", "the", "tiger"], ["that", "tiger's", "teeth"], ["the", "teeth", "of", "that", "tiger"] ] },
-    { rules: [2, 4], chinese: "一些老虎的棲息地", correct_tokens: [ ["some", "tigers'", "habitats"], ["the", "habitats", "of", "some", "tigers"], ["some", "tigers'", "habitat"] ] },
+    { rules: [2, 4], chinese: "一些老虎的棲息地(habitat)", correct_tokens: [ ["some", "tigers'", "habitats"], ["the", "habitats", "of", "some", "tigers"], ["some", "tigers'", "habitat"] ] },
     { rules: [2, 4], chinese: "這隻馬的腿", correct_tokens: [ ["this", "horse's", "legs"], ["the", "legs", "of", "this", "horse"] ] },
     { rules: [2, 4], chinese: "那些馬的速度", correct_tokens: [ ["the", "horses'", "speed"], ["the", "speed", "of", "the", "horses"], ["those", "horses'", "speed"] ] },
     { rules: [2, 4], chinese: "那條鯊魚的鰭", correct_tokens: [ ["the", "shark's", "fin"], ["the", "fin", "of", "the", "shark"], ["that", "shark's", "fin"] ] },
@@ -153,11 +152,10 @@ const questionBank = [
     { rules: [2, 4, 12], chinese: "紐約的博物館", correct_tokens: [ ["New", "York's", "museums"], ["the", "museums", "of", "New", "York"], ["the", "museums", "in", "New", "York"] ] },
     { rules: [2, 4, 12], chinese: "韓國的文化", correct_tokens: [ ["Korea's", "culture"], ["the", "culture", "of", "Korea"], ["the", "culture", "in", "Korea"] ] },
     { rules: [2, 4, 12], chinese: "澳洲的經濟", correct_tokens: [ ["Australia's", "economy"], ["the", "economy", "of", "Australia"], ["the", "economy", "in", "Australia"] ] },
-    { rules: [2, 4, 12], chinese: "那個國家的首都", correct_tokens: [ ["that", "country's", "capital"], ["the", "capital", "of", "that", "country"], ["the", "capital", "of", "the", "country"] ] },
+    { rules: [2, 4, 12], chinese: "那個國家的首都(capital)", correct_tokens: [ ["that", "country's", "capital"], ["the", "capital", "of", "that", "country"], ["the", "capital", "of", "the", "country"] ] },
     { rules: [2, 4, 12], chinese: "這些國家的資源", correct_tokens: [ ["these", "countries'", "resources"], ["the", "resources", "of", "these", "countries"], ["the", "resources", "in", "these", "countries"] ] },
     { rules: [2, 4, 12], chinese: "這個城市的交通", correct_tokens: [ ["this", "city's", "traffic"], ["the", "traffic", "of", "this", "city"], ["the", "traffic", "in", "this", "city"] ] },
     { rules: [2, 4, 12], chinese: "那些城市的污染", correct_tokens: [ ["those", "cities'", "pollution"], ["the", "pollution", "of", "those", "cities"], ["the", "pollution", "in", "those", "cities"] ] },
-    { rules: [2, 4, 12], chinese: "這個省份的農業", correct_tokens: [ ["this", "province's", "agriculture"], ["the", "agriculture", "of", "this", "province"], ["the", "agriculture", "in", "this", "province"] ] },
     { rules: [2, 4, 12], chinese: "那個島嶼的沙灘", correct_tokens: [ ["that", "island's", "beaches"], ["the", "beaches", "of", "that", "island"], ["the", "beaches", "on", "that", "island"] ] }, // 島嶼用 on
 
     // [機構、建築物與地方：加入 Rule 12 地點用法 (in/at)]
@@ -679,7 +677,7 @@ const questionBank = [
     { rules: [7, 5], chinese: "那杯有冰塊的水", correct_tokens: [ ["the", "glass", "of", "water", "with", "ice"], ["the", "water", "with", "ice"], ["the", "glass", "of", "water", "which", "has", "ice"] ] },
     { rules: [7, 5], chinese: "這碗有牛肉的湯", correct_tokens: [ ["this", "bowl", "of", "soup", "with", "beef"], ["this", "soup", "with", "beef"], ["this", "soup", "which", "has", "beef"] ] },
     { rules: [7, 5], chinese: "一個有起司的漢堡", correct_tokens: [ ["a", "hamburger", "with", "cheese"], ["a", "burger", "with", "cheese"], ["a", "hamburger", "which", "has", "cheese"] ] },
-    { rules: [7, 5], chinese: "很多有番茄的沙拉", correct_tokens: [ ["many", "salads", "with", "tomatoes"], ["many", "salads", "which", "have", "tomatoes"] ] },
+    { rules: [7, 5], chinese: "一個有很多番茄的沙拉", correct_tokens: [ ["a", "salad", "with", , "many", "tomatoes"], ["a", "salad", "which", "has", "many", "tomatoes"] ] },
     { rules: [7, 5], chinese: "那杯有糖的茶", correct_tokens: [ ["the", "cup", "of", "tea", "with", "sugar"], ["the", "tea", "with", "sugar"], ["the", "tea", "which", "has", "sugar"] ] },
     { rules: [7, 5], chinese: "這些有牛奶的咖啡", correct_tokens: [ ["these", "coffees", "with", "milk"], ["these", "coffees", "which", "have", "milk"] ] },
     { rules: [7, 5], chinese: "一本有很多圖片的書", correct_tokens: [ ["a", "book", "with", "many", "pictures"], ["a", "book", "which", "has", "many", "pictures"] ] },
