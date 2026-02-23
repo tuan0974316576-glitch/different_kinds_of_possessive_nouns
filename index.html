@@ -485,20 +485,20 @@ async function checkAnswerWithAI(studentAnswer, questionChinese, ruleDesc, stand
         // 1. 分類定義與解釋對照表 
         // ------------------------------------------------------------------
 const categories = [
-            { id: 1, name: "簡單形容詞 / 數字+量詞" },
-            { id: 2, name: "有生命的 (人/動物/地方 's)" }, // ROW 1
+            { id: 1, name: "簡單形容詞+的 / 數字+量詞+的" },
+            { id: 2, name: "生物的" }, // ROW 1
 
             { id: 3, name: "有...的 (with)" },
             { id: 4, name: "沒有...的 (without)" }, // ROW 2
 
-            { id: 5, name: "關於...的 (about)" },
+            { id: 5, name: "關於...的" },
             { id: 10, name: "死物的死物 (the...of...)" }, // ROW 3
 
-            { id: 6, name: "主動動詞 / Modal Verb" },
+            { id: 6, name: "主動動詞 + 的 / Modal Verb + 的" },
             { id: 9, name: "句子 + 的" }, // ROW 4
 
-            { id: 7, name: "被動動詞 (p.p.)" },
-            { id: 8, name: "複合形容詞 (afraid of...等)" }, // ROW 5
+            { id: 7, name: "被動動詞 + 的" },
+            { id: 8, name: "複合形容詞 + 的" }, // ROW 5
 
             { id: 11, name: "地方 + 的" },
             { id: 12, name: "時間 + 的" } // ROW 6
@@ -1046,6 +1046,7 @@ function goBackToMenu() {
     </script>
 </body>
 </html>
+
 
 
 
